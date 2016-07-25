@@ -1,0 +1,5 @@
+
+set solib-search-path .
+file servald
+target remote 127.0.0.1:5123
+

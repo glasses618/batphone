@@ -46,6 +46,7 @@
     <string name="powerLabel">Power</string>    
     <string name="helpLabel">Help</string>	
     <string name="connectLabel">Connect</string>
+    <string name="groupLabel">Group </string>   
 
     <string name="state_installing">Installing&#8230;</string>
     <string name="state_upgrading">Upgrading&#8230;</string>
@@ -145,4 +146,10 @@
 
     <string name="meshms_delivered">delivered</string>
     <string name="meshms_read">read</string>
+
+    <!-- group setting -->
+    <string name="group_broadcast_button">broadcast</string> 
+    <string name="group_create_button">create group</string>
+    <string name="group_list_header">My groups</string> 
+    <string name="group_member_header">Group Members</string>   
 </resources>

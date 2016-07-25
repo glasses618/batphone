@@ -45,6 +45,7 @@ import org.servalproject.servaldna.keyring.KeyringIdentity;
 import org.servalproject.servaldna.meshms.MeshMSMessage;
 import org.servalproject.servaldna.meshms.MeshMSMessageList;
 import org.servalproject.ui.SimpleAdapter;
+import org.servalproject.group.GroupService;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -72,7 +73,8 @@ public class ShowConversationActivity extends ListActivity implements OnClickLis
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			if (intent.getAction().equals(MeshMS.NEW_MESSAGES)) {
-				populateList();
+	      Log.d(TAG,"New message!!");
+        populateList();
 			}
 		}
 
@@ -226,6 +228,10 @@ public class ShowConversationActivity extends ListActivity implements OnClickLis
 			@Override
 			protected List<Object> doInBackground(Void... voids) {
 				try{
+          //Intent intentGroupService = new Intent(ServalBatPhoneApplication.context, GroupService.class);
+         // intentGroupService.putExtra("sender", recipient.sid.toString());
+         // app.startService(intentGroupService);
+
 					MeshMSMessageList results = app.server.getRestfulClient().meshmsListMessages(identity.sid, recipient.sid);
 					MeshMSMessage item;
 					LinkedList<Object> listItems = new LinkedList<Object>();

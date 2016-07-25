@@ -46,7 +46,7 @@ import org.servalproject.ui.Networks;
 import org.servalproject.ui.ShareUsActivity;
 import org.servalproject.ui.help.HtmlHelp;
 import org.servalproject.wizard.Wizard;
-
+import org.servalproject.group.GroupActivity;
 /**
  *
  * Main activity which presents the Serval launcher style screen. On the first
@@ -143,6 +143,10 @@ public class Main extends Activity implements OnClickListener {
 			startActivity(new Intent(getApplicationContext(),
 					Networks.class));
 			break;
+    case R.id.groupLabel:
+      startActivity(new Intent(getApplicationContext(),
+            GroupActivity.class));
+      break;
 		}
 	}
 
@@ -174,6 +178,7 @@ public class Main extends Activity implements OnClickListener {
 				R.id.sharingLabel,
 				R.id.helpLabel,
 				R.id.servalLabel,
+        R.id.groupLabel
 		};
 		for (int i = 0; i < listenTo.length; i++) {
 			this.findViewById(listenTo[i]).setOnClickListener(this);

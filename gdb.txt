@@ -1,0 +1,14 @@
+Currently logging to "gdb.txt".
+Logs will be appended to the log file.
+Output is being logged and displayed.
+Starting program:  
+No executable file specified.
+Use the "file" or "exec-file" command.
+"/home/nmslab/batphone/servald-gdb": not in executable format: File format not recognized
+server: No such file or directory.
+Reading symbols from gdbserver...(no debugging symbols found)...done.
+Starting program: /home/nmslab/batphone/gdbserver 
+During startup program exited with code 126.
+Reading symbols from jni/serval-dna/servald...done.
+Starting program: /home/nmslab/batphone/jni/serval-dna/servald 
+[Inferior 1 (process 9223) exited with code 0377]

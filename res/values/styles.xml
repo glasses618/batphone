@@ -933,7 +933,13 @@
 		<item name="android:textColor">@color/orange</item>
         <item name="android:layout_marginRight">4sp</item>
  	</style>
- 	
+  <!-- group -->
+  	<style name="grouplist">
+		<item name="android:textColorLink">@color/white</item>
+		<item name="android:layout_width">fill_parent</item>
+   		<item name="android:layout_height">fill_parent</item>
+  	</style>
+ 
 </resources>
  			
  			

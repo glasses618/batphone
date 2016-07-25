@@ -18,177 +18,195 @@
  * along with this source code; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  -->
-	<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-          android:layout_width="fill_parent"
-          android:layout_height="fill_parent" >
+  <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
 
-          <!-- Header -->
+    <!-- Header -->
 
-          <include
-              android:id="@+id/headerLayout"
-              layout="@layout/header_layout" />
-          
-          <!-- Body -->
-         
-     
-	<TableLayout 
-	    android:id="@+id/tableMain"   	
-        android:layout_marginTop="50dp"
-    	style="@style/smainTable">
-    		 
-    	<TableRow 
-    	    android:id="@+id/tableRow1a"
-    	    style="@style/smainTableRow">
-    	    
-         	<ImageView 
-         	    android:id="@+id/btncall"
-         	    style="@style/smainTableIcon"
-         	    android:contentDescription="@string/callLabel"
-         	    android:src="@drawable/ic_launcher_call" />
-         		
-    	     <ImageView 
-    	        android:id="@+id/messageLabel"
-       			android:contentDescription="@string/messageLabel"
-       			android:src="@drawable/ic_launcher_message"
-       			style="@style/smainTableIcon" /> 	
-       			          
-    		 <ImageView 
-    		     android:id="@+id/contactsLabel"
-       			 android:contentDescription="@string/contactsLabel"
-         		 android:src="@drawable/ic_launcher_contacts"         			
-       			 style="@style/smainTableIcon" />   
-       			
-        </TableRow>  
-        
-     <TableRow 
-         android:id="@+id/tableRow1b"
-         style="@style/smainTableRow">
-    		  
-            <TextView
-                android:id="@+id/callText"
-                style="@style/smainTableRowText"
-                android:text="@string/callLabel" />
-			
-			<TextView 
-			    android:id="@+id/messageText"
-				style="@style/smainTableRowText" 
-				android:text="@string/messageLabel" />
-			
-			<TextView 
-			    android:id="@+id/contactsText"
-				style="@style/smainTableRowText" 
-				android:text="@string/contactsLabel" />
-			
-		</TableRow>
-		
- 		<TableRow 
- 		    android:id="@+id/tableRow2a"
-           style="@style/smainTableRow">
-    	    
-           	<ImageView 
-           	    android:id="@+id/mapsLabel"
-       			android:contentDescription="@string/mapsLabel"
-         		android:src="@drawable/ic_launcher_map"
-       			style="@style/smainTableIcon" /> 
-       			
-    	    <ImageView 
-    	        android:id="@+id/sharingLabel"
-       			android:contentDescription="@string/sharingLabel"
-       			android:src="@drawable/ic_launcher_sharing"
-       			style="@style/smainTableIcon" /> 	 
-       			         
-    	    <ImageView 
-    	        android:id="@+id/servalLabel"
-         		android:contentDescription="@string/servalLabel"
-         		android:src="@drawable/ic_launcher_share_us"
-         		style="@style/smainTableIcon" />  
-         		 
-       	</TableRow> 
-       	
-		<TableRow 
-		   android:id="@+id/tableRow2b"
-           style="@style/smainTableRow">
-		    
-			<TextView 
-			    android:id="@+id/mapsText"
-                style="@style/smainTableRowText"
-				android:text="@string/mapsLabel" />
-			
-			<TextView 
-			    android:id="@+id/sharingText"
-                style="@style/smainTableRowText"
-				android:text="@string/sharingLabel" />
-			
-			<TextView 
-			    android:id="@+id/wifiText"
-                style="@style/smainTableRowText"
-				android:text="@string/servalLabel" />
-			
-		</TableRow>   
-		
-   	 	<TableRow 
-   	 	    android:id="@+id/tableRow3a"
-            style="@style/smainTableRow">
-   	 	    
-       	 	<ImageView
-       	 	    android:id="@+id/settingsLabel"
-       	 	    style="@style/smainTableIcon"
-       	 	    android:layout_height="match_parent"
-       	 	    android:contentDescription="@string/settingsLabel"
-       	 	    android:src="@drawable/ic_launcher_config" />
-			
-    		<ImageView 
-    		    android:id="@+id/powerLabel"
-       			android:contentDescription="@string/powerLabel"
-       			android:src="@drawable/ic_launcher_power"
-       			style="@style/smainTableIcon"  /> 	
-       			          
-    		<ImageView 
-    		    android:id="@+id/helpLabel"
-     			android:contentDescription="@string/helpLabel"
-				android:src="@drawable/ic_launcher_help"
-         		style="@style/smainTableIcon"  />  
-         		 
-    	</TableRow> 
-    	
-		<TableRow 
-		    android:id="@+id/tableRow3b"
-            style="@style/smainTableRow">
-		     
-			<TextView 
-			    android:id="@+id/settingsText"
-                style="@style/smainTableRowText"
-				android:text="@string/settingsLabel" />
-			
-			<TextView 
-			    android:id="@+id/btntoggle"
-                style="@style/smainTableRowText" 
-				android:text="@string/connectLabel" />
-			
-			<TextView 
-			    android:id="@+id/helpText"
-                style="@style/smainTableRowText"
-				android:text="@string/helpLabel" />
-			
-		</TableRow>
+    <include
+      android:id="@+id/headerLayout"
+      layout="@layout/header_layout" />
 
-</TableLayout> 
+    <!-- Body -->
 
-	<RelativeLayout android:layout_width="fill_parent"
-		android:layout_height="wrap_content"
-		android:layout_below="@+id/tableMain">
-		
-          		<TextView
-    		        android:id="@+id/phonelabel"
-    		        style="@style/stextleft1"
-    		        android:text="@string/PhoneDetails" />
 
-    		    <TextView
-    		        android:id="@+id/mainphonenumber"
-    		        style="@style/stextright1" 
-    		        android:layout_toRightOf="@+id/phonelabel"/>	
-	</RelativeLayout>
-		
+    <TableLayout 
+      android:id="@+id/tableMain"   	
+      android:layout_marginTop="50dp"
+      style="@style/smainTable">
+
+      <TableRow 
+        android:id="@+id/tableRow1a"
+        style="@style/smainTableRow">
+
+        <ImageView 
+          android:id="@+id/btncall"
+          style="@style/smainTableIcon"
+          android:contentDescription="@string/callLabel"
+          android:src="@drawable/ic_launcher_call" />
+
+        <ImageView 
+          android:id="@+id/messageLabel"
+          android:contentDescription="@string/messageLabel"
+          android:src="@drawable/ic_launcher_message"
+          style="@style/smainTableIcon" /> 	
+
+        <ImageView 
+          android:id="@+id/contactsLabel"
+          android:contentDescription="@string/contactsLabel"
+          android:src="@drawable/ic_launcher_contacts"         			
+          style="@style/smainTableIcon" />   
+
+      </TableRow>  
+
+      <TableRow 
+        android:id="@+id/tableRow1b"
+        style="@style/smainTableRow">
+
+        <TextView
+          android:id="@+id/callText"
+          style="@style/smainTableRowText"
+          android:text="@string/callLabel" />
+
+        <TextView 
+          android:id="@+id/messageText"
+          style="@style/smainTableRowText" 
+          android:text="@string/messageLabel" />
+
+        <TextView 
+          android:id="@+id/contactsText"
+          style="@style/smainTableRowText" 
+          android:text="@string/contactsLabel" />
+
+      </TableRow>
+
+      <TableRow 
+        android:id="@+id/tableRow2a"
+        style="@style/smainTableRow">
+
+        <ImageView 
+          android:id="@+id/mapsLabel"
+          android:contentDescription="@string/mapsLabel"
+          android:src="@drawable/ic_launcher_map"
+          style="@style/smainTableIcon" /> 
+
+        <ImageView 
+          android:id="@+id/sharingLabel"
+          android:contentDescription="@string/sharingLabel"
+          android:src="@drawable/ic_launcher_sharing"
+          style="@style/smainTableIcon" /> 	 
+
+        <ImageView 
+          android:id="@+id/servalLabel"
+          android:contentDescription="@string/servalLabel"
+          android:src="@drawable/ic_launcher_share_us"
+          style="@style/smainTableIcon" />  
+
+      </TableRow> 
+
+      <TableRow 
+        android:id="@+id/tableRow2b"
+        style="@style/smainTableRow">
+
+        <TextView 
+          android:id="@+id/mapsText"
+          style="@style/smainTableRowText"
+          android:text="@string/mapsLabel" />
+
+        <TextView 
+          android:id="@+id/sharingText"
+          style="@style/smainTableRowText"
+          android:text="@string/sharingLabel" />
+
+        <TextView 
+          android:id="@+id/wifiText"
+          style="@style/smainTableRowText"
+          android:text="@string/servalLabel" />
+
+      </TableRow>   
+
+      <TableRow 
+        android:id="@+id/tableRow3a"
+        style="@style/smainTableRow">
+
+        <ImageView
+          android:id="@+id/settingsLabel"
+          style="@style/smainTableIcon"
+          android:layout_height="match_parent"
+          android:contentDescription="@string/settingsLabel"
+          android:src="@drawable/ic_launcher_config" />
+
+        <ImageView 
+          android:id="@+id/powerLabel"
+          android:contentDescription="@string/powerLabel"
+          android:src="@drawable/ic_launcher_power"
+          style="@style/smainTableIcon"  /> 	
+
+        <ImageView 
+          android:id="@+id/helpLabel"
+          android:contentDescription="@string/helpLabel"
+          android:src="@drawable/ic_launcher_help"
+          style="@style/smainTableIcon"  />  
+
+      </TableRow> 
+
+      <TableRow 
+        android:id="@+id/tableRow3b"
+        style="@style/smainTableRow">
+
+        <TextView 
+          android:id="@+id/settingsText"
+          style="@style/smainTableRowText"
+          android:text="@string/settingsLabel" />
+
+        <TextView 
+          android:id="@+id/btntoggle"
+          style="@style/smainTableRowText" 
+          android:text="@string/connectLabel" />
+
+        <TextView 
+          android:id="@+id/helpText"
+          style="@style/smainTableRowText"
+          android:text="@string/helpLabel" />
+
+      </TableRow>
+      <TableRow
+        android:id="@+id/tableRow4a"
+        style="@style/smainTableRow"> 	
+        <ImageView
+          android:id="@+id/groupLabel"
+          android:contentDescription="@string/groupLabel"
+          android:src="@drawable/ic_launcher_help"
+          style="@style/smainTableIcon"/> 	
+
+      </TableRow> 
+          <TableRow
+        android:id="@+id/tableRow4b"
+        style="@style/smainTableRow">
+        <TextView
+          android:id="@+id/groupText"
+          style="@style/smainTableRowText"
+          android:text="@string/groupLabel"/>
+      </TableRow> 
+
+    </TableLayout> 
+
+    <RelativeLayout android:layout_width="fill_parent"
+      android:layout_height="wrap_content"
+      android:layout_below="@+id/tableMain">
+
+      <TextView
+        android:id="@+id/phonelabel"
+        style="@style/stextleft1"
+        android:text="@string/PhoneDetails" />
+
+      <TextView
+        android:id="@+id/mainphonenumber"
+        style="@style/stextright1" 
+        android:layout_toRightOf="@+id/phonelabel"/>	
+    </RelativeLayout>
+
 
 <!--   	<Button -->
 <!-- 		 android:id="@+id/btnDonate" -->

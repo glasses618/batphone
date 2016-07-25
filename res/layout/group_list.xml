@@ -1,0 +1,51 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="fill_parent"
+  android:layout_height="fill_parent" >
+
+  <!-- Header -->
+
+  <include
+    android:id="@+id/headerLayout"
+    layout="@layout/header_layout" />
+
+  <!-- Body -->
+
+  <TextView
+    android:id="@+id/new_group_header"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_centerHorizontal="true"
+    android:text="@string/group_list_header"
+    android:textSize="20sp"
+    android:textStyle="bold"
+    android:layout_marginTop="50dp"
+    android:layout_marginBottom="5dp"/>
+
+  <LinearLayout 
+    android:layout_below="@id/new_group_header"
+    android:id="@+id/linear_layout_create_group"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+    <EditText 
+      android:layout_width="0dp"
+      android:layout_weight="2"
+      android:layout_height="wrap_content"
+      android:id="@+id/edit_text_create_group"/>
+    <Button 
+      android:layout_width="0dp"
+      android:layout_weight="1"
+      android:layout_height="wrap_content"
+      android:id="@+id/button_create_group"
+      android:text="@string/group_create_button"
+      />
+  </LinearLayout> 
+
+  <ListView
+    android:id="@+id/list_view_group"
+    style="@style/grouplist"
+    android:layout_below="@id/linear_layout_create_group"
+    android:divider="@color/green"
+    android:dividerHeight="2dp" />
+
+</RelativeLayout>

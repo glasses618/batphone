@@ -304,11 +304,14 @@ public class Rhizome {
 		public void run() {
 			try {
 				if (manifest instanceof RhizomeManifest_MeshMS) {
+          Log.d(TAG,"new!!");
 					RhizomeManifest_MeshMS meshms = (RhizomeManifest_MeshMS) manifest;
 					KeyringIdentity identity = ServalBatPhoneApplication.context.server.getIdentity();
 					if (identity!=null && identity.sid.equals(meshms.getRecipient()))
-                        if (ServalBatPhoneApplication.context.meshMS!=null)
-                            ServalBatPhoneApplication.context.meshMS.bundleArrived(meshms);
+            if (ServalBatPhoneApplication.context.meshMS!=null){
+              //  ServalBatPhoneApplication.context.displayToastMessage("new messgae!!");
+              Log.d(TAG,"new messgae!");
+              ServalBatPhoneApplication.context.meshMS.bundleArrived(meshms);}
 					else if (meshms.getRecipient().isBroadcast()) {
                         // TODO?
 					} else

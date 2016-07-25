@@ -18,6 +18,7 @@ import org.servalproject.servald.ServalD;
 import org.servalproject.servaldna.SubscriberId;
 import org.servalproject.servaldna.meshms.MeshMSConversation;
 import org.servalproject.servaldna.meshms.MeshMSConversationList;
+import org.servalproject.group.GroupService;
 
 public class MeshMS {
 	private final ServalBatPhoneApplication app;
@@ -31,9 +32,19 @@ public class MeshMS {
 	}
 
 	public void bundleArrived(RhizomeManifest_MeshMS meshms) throws RhizomeManifest.MissingField {
+    Log.d("MeshMS_","new message!!");
+
+    Log.d("MeshMS_","mysid:" + sid.toString()+" receiver:" + meshms.getRecipient().toString() + " sender:" + meshms.getSender().toString() );
 		if (sid.equals(meshms.getRecipient())){
+      Log.d("MeshMS_","sender: " + meshms.getSender().toString());
 			initialiseNotification();
-			app.sendBroadcast(new Intent(NEW_MESSAGES));
+      Intent intent = new Intent(NEW_MESSAGES);
+      intent.putExtra("sender", meshms.getSender().toString());
+			app.sendBroadcast(intent);
+      
+      Intent intentGroupService = new Intent(ServalBatPhoneApplication.context, GroupService.class);
+      intentGroupService.putExtra("sender", meshms.getSender().toString());
+      app.startService(intentGroupService);
 		}
 	}
 
