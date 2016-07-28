@@ -4,10 +4,12 @@ import android.os.Bundle;
 import android.app.Activity;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.util.SparseBooleanArray;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ArrayAdapter;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -39,11 +41,18 @@ public class GroupActivity extends Activity {
   private ServalBatPhoneApplication app;
   private KeyringIdentity identity;
   private ArrayList<Group> groups = new ArrayList<Group>();
-  private GroupListAdapter adapter;
-  private List<Peer> peers = new ArrayList<Peer>();
+  private ArrayAdapter<String> groupPeerListAdapter;
+  private GroupListAdapter groupListAdapter;
+  private ArrayList<Peer> peers = new ArrayList<Peer>();
+  private ArrayList<String> peersList = new ArrayList<String>();
   private ListView groupListView; 
+  private ListView groupPeerListView;
   private Button buttonCreateGroup;
+  private Button buttonDestroyGroup;
+  private Button buttonJoinGroup;
+  private Button buttonLeaveGroup;
   private EditText etCreateGroup;  
+  private EditText etGroupPeer;  
   private GroupDAO groupDAO;
 
   @Override
@@ -51,8 +60,12 @@ public class GroupActivity extends Activity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.group_list);
     buttonCreateGroup = (Button) findViewById(R.id.button_create_group); 
+    buttonDestroyGroup = (Button) findViewById(R.id.button_destroy_group);
+    buttonJoinGroup = (Button) findViewById(R.id.button_join_group);
+    buttonLeaveGroup = (Button) findViewById(R.id.button_leave_group);
     etCreateGroup = (EditText) findViewById(R.id.edit_text_create_group);
-    
+    etGroupPeer = (EditText) findViewById(R.id.edit_text_group_peer);
+
     try {
       app = ServalBatPhoneApplication.context;
       this.identity = app.server.getIdentity();
@@ -60,10 +73,10 @@ public class GroupActivity extends Activity {
 
       setupGroupList();
       setupButtonListener();
+      setupGroupPeerList();      
 
-      
-//      Group group = groups.get(0);
-//      multicast(group, "Hello!");
+      //      Group group = groups.get(0);
+      //      multicast(group, "Hello!");
 
     } catch (Exception e) {
       Log.e(TAG, e.getMessage(), e);
@@ -103,6 +116,7 @@ public class GroupActivity extends Activity {
 
     //    this.unregisterReceiver(receiver);
     peers.clear();
+    peersList.clear();
     super.onPause();
     //		listAdapter.notifyDataSetChanged();
   }
@@ -134,18 +148,24 @@ public class GroupActivity extends Activity {
   //
   //	};
 
-  private void updateGroupList() {
-
-  }
 
   private void setupGroupList() {
     groups = groupDAO.getMyGroupList();
     groups.addAll(groupDAO.getOtherGroupList());
-    adapter = new GroupListAdapter(this, groups);
+    groupListAdapter = new GroupListAdapter(this, groups);
     groupListView = (ListView) findViewById(R.id.list_view_group);
-    groupListView.setAdapter(adapter);
+    groupListView.setAdapter(groupListAdapter);
+
   }
 
+  private void setupGroupPeerList() {
+    groupPeerListAdapter =
+      new ArrayAdapter<String>(this, android.R.layout.simple_list_item_single_choice, peersList);
+    groupPeerListView = (ListView) findViewById(R.id.list_view_group_peer);
+    groupPeerListView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+    groupPeerListView.setAdapter(groupPeerListAdapter);
+  }
+  
   private void setupButtonListener() {
 
     buttonCreateGroup.setOnClickListener(new View.OnClickListener() {
@@ -153,14 +173,61 @@ public class GroupActivity extends Activity {
       public void onClick(View v) {
         String name = etCreateGroup.getText().toString();  
         createGroup(name);
-        groups.add(new Group(name));
-        adapter.notifyDataSetChanged();
+        setupGroupList();
         etCreateGroup.setText("");
       }
     }
     );
 
+    buttonDestroyGroup.setOnClickListener(new View.OnClickListener(){
+      @Override
+      public void onClick(View v){
+        String name = etCreateGroup.getText().toString();
+        if(destroyGroup(name)){
+          setupGroupList();
+        }
+        etCreateGroup.setText("");
+      }
+    });
+    
+    buttonJoinGroup.setOnClickListener(new View.OnClickListener(){
+      @Override
+      public void onClick(View v){
+        String groupName = etGroupPeer.getText().toString();
+        int len = groupPeerListView.getCount();
+        SparseBooleanArray checked = groupPeerListView.getCheckedItemPositions();
+        for (int i = 0; i < len; i++){
+          if (checked.get(i)) {
+            SubscriberId peerSid  = peers.get(i).getSubscriberId();
+            String peerString = peerSid.toString();
+            String text = "Group Message:JOIN," + groupName + "," + peerString;
+            unicast(GroupActivity.this.identity.sid, peerSid, text);
+          }
+        }
+        etGroupPeer.setText("");
+      }
+    });
+    
+    buttonLeaveGroup.setOnClickListener(new View.OnClickListener(){
+      @Override
+      public void onClick(View v){
+        String groupName = etGroupPeer.getText().toString();
+        int len = groupPeerListView.getCount();
+        SparseBooleanArray checked = groupPeerListView.getCheckedItemPositions();
+        for (int i = 0; i < len; i++){
+          if (checked.get(i)) {
+            SubscriberId peerSid  = peers.get(i).getSubscriberId();
+            String peerString = peerSid.toString();
+            String text = "Group Message:LEAVE," + groupName + "," + peerString;
+            unicast(GroupActivity.this.identity.sid, peerSid, text);
+          }
+        }
+ 
+        etGroupPeer.setText("");
+      }
+    });
   }
+  
 
   private void peerUpdated(Peer p) {
     if (!peers.contains(p)){
@@ -170,6 +237,11 @@ public class GroupActivity extends Activity {
       Log.d(TAG,"New peer: "+ p.toString());
     }
     Collections.sort(peers, new PeerComparator());
+    GroupActivity.this.peersList.clear();
+    for(int i = 0; i < peers.size(); i++){
+      GroupActivity.this.peersList.add(peers.get(i).toString());
+    }
+      GroupActivity.this.groupPeerListAdapter.notifyDataSetChanged();
     //		listAdapter.notifyDataSetChanged();
   }
 
@@ -191,6 +263,32 @@ public class GroupActivity extends Activity {
     if (!name.equals("")){
       groupDAO.createGroup(name, identity.sid.toString(),"");
     }
+  }
+
+  public boolean destroyGroup(String groupName) {
+    boolean result = false;
+    try{
+      if(groupDAO.isMyGroup(groupName)){
+        ArrayList<String> members = groupDAO.getMemberList(groupName, identity.sid.toString());
+        if (members.size() > 0){
+          String newLeader = members.get(0);
+          for(int i = 0; i < members.size(); i++) {
+            SubscriberId memberSid = new SubscriberId(members.get(i));
+            String text = "Group Message:CHANGE_LEADER," + groupName + "," + identity.sid.toString() + "," + newLeader;
+            unicast(identity.sid, memberSid, text); 
+          } 
+
+        } 
+        groupDAO.deleteGroup(groupName, identity.sid.toString());
+        result = true;
+      }
+    } catch(Exception e) { 
+      Log.e(TAG, e.getMessage(), e); 
+      app.displayToastMessage(e.getMessage());
+    }
+
+      return result;
+
   }
 
   public void unicast(SubscriberId sender, SubscriberId receiver, String messageText) {
@@ -241,7 +339,7 @@ public class GroupActivity extends Activity {
   //      unicast(identity.sid, peers.get(i).sid, "broadcast");
   //    }
   //  }
-  
+
   private void checkNewJoinRequest(){
     HashMap<String,String> newJoinList = groupDAO.getNewJoinList();
     Set set = newJoinList.entrySet();
@@ -267,14 +365,13 @@ public class GroupActivity extends Activity {
 
   private void addMember(String groupName, String member) {
     try{
-      GroupMember groupMember = new GroupMember(groupName, "MEMBER", member, "");
-      
-    if(groupDAO.isMyGroup(groupName)){
-      groupDAO.insertMember(groupMember);
-      //ArrayList<Group> groupList = groupDAO.getMyGroupList();
-      //multicast(group, "new Member " + member + " joined!");
-      Log.d(TAG, member + " joined!");
-    }
+
+      if(groupDAO.isMyGroup(groupName)){
+        groupDAO.insertMember(new GroupMember(groupName, identity.sid.toString(), "MEMBER", member, ""));
+        //ArrayList<Group> groupList = groupDAO.getMyGroupList();
+        //multicast(group, "new Member " + member + " joined!");
+        Log.d(TAG, member + " joined!");
+      }
     }
     catch(Exception e){
       Log.e(TAG, e.getMessage(), e);
@@ -286,14 +383,13 @@ public class GroupActivity extends Activity {
 
   private void removeMember(String groupName, String member) {
     try{
-      GroupMember groupMember = new GroupMember(groupName, "MEMBER", member, "");
 
       if(groupDAO.isMyGroup(groupName)){
-        groupDAO.deleteMember(groupMember);
+        groupDAO.deleteMember(new GroupMember(groupName, identity.sid.toString(), "MEMBER", member, ""));
         //ArrayList<Group> groupList = groupDAO.getMyGroupList();
         //multicast(group, "new Member " + member + " joined!");
         SubscriberId memberSid = new SubscriberId(member);
-        unicast(identity.sid , memberSid, "Group Message:DONE_LEAVE," + groupName);
+        unicast(identity.sid , memberSid, "Group Message:DONE_LEAVE," + groupName + "," + identity.sid.toString());
         Log.d(TAG, member + " leave!");
       }
     }

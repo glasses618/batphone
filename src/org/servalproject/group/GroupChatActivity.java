@@ -39,6 +39,7 @@ public class GroupChatActivity extends Activity{
   private Button buttonSendGroupMessage;
   private EditText etGroupMessageContent;
   private String groupName;
+  private String groupLeaderSid;
   private GroupDAO groupDAO;
 
   @Override 
@@ -55,6 +56,7 @@ public class GroupChatActivity extends Activity{
       setupButtonListener();
       Intent intent = getIntent();
       groupName =  intent.getStringExtra("group_name");
+      groupLeaderSid = intent.getStringExtra("leader_sid");
       groupDAO= new GroupDAO(getApplicationContext(),identity.sid.toString());
       updateGroupMembers();
       notifyGroupMember();
@@ -101,9 +103,9 @@ public class GroupChatActivity extends Activity{
       @Override
       public void onClick(View v) {
         String text = etGroupMessageContent.getText().toString();
-        multicast("Group Message:CHAT,"+ groupName + "," + text, "CHAT");
-        long timestamp = System.currentTimeMillis() / 1000;
-        GroupChatActivity.this.groupDAO.insertMessage(new GroupMessage("CHAT", GroupChatActivity.this.identity.sid.toString(), "", groupName, timestamp, 1,  text));
+        multicast("Group Message:CHAT,"+ groupName + "," + groupLeaderSid  +","+ text, "CHAT");
+        Long timestamp = System.currentTimeMillis();
+        GroupChatActivity.this.groupDAO.insertMessage(new GroupMessage("CHAT", GroupChatActivity.this.identity.sid.toString(), "", groupName, timestamp, 1,  text, groupLeaderSid));
         populateList();
         etGroupMessageContent.setText(""); 
 
@@ -113,13 +115,12 @@ public class GroupChatActivity extends Activity{
   }
 
   private void updateGroupMembers(){
-    
-      members = groupDAO.getMemberList(groupName);
+    members = groupDAO.getMemberList(groupName, groupLeaderSid);
   }
   private void notifyGroupMember() {
     if(groupDAO.isMyGroup(groupName)){
       String membersList = TextUtils.join(",",members);
-      multicast("Group Message:UPDATE," + groupName + "," + membersList, "UPDATE");
+      multicast("Group Message:UPDATE," + groupName + ","+ groupLeaderSid  + "," + membersList, "UPDATE");
     }
   }
   private void populateList() {
@@ -155,7 +156,7 @@ public class GroupChatActivity extends Activity{
     protected ArrayList<GroupChat> doInBackground(Void... params){
       groupDAO = new GroupDAO(getApplicationContext(), identity.sid.toString());
       ArrayList<GroupChat> chatList = new ArrayList<GroupChat>();
-      chatList =  groupDAO.getChatList(groupName);
+      chatList =  groupDAO.getChatList(groupName, groupLeaderSid);
       return chatList;
     }
   }

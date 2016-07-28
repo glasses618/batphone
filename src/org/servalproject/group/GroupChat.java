@@ -1,4 +1,3 @@
-
 package org.servalproject.group;
 
 public class GroupChat {
@@ -25,5 +24,8 @@ public class GroupChat {
   public String getShortSid(){
     String shortSid = sid.substring(0, 5) + "*";
     return shortSid;
+  }
+  public boolean getIsMine() {
+    return isMine;
   }
 }

@@ -13,9 +13,10 @@ public class GroupMessage {
   private Long timestamp;
   private Integer done;
   private String content;
+  private String groupLeader;
 
   public GroupMessage(String type, String fromWho, String toWho, String objectGroup,
-      Long timestamp, Integer done, String content) {
+      Long timestamp, Integer done, String content, String groupLeader) {
     
     this.type = type;
     this.fromWho = fromWho;
@@ -24,6 +25,7 @@ public class GroupMessage {
     this.timestamp = timestamp;
     this.done = done;
     this.content = content;
+    this.groupLeader = groupLeader;
   }
   
   public String getType() {
@@ -54,6 +56,9 @@ public class GroupMessage {
     return content;
   }
   
+  public String getGroupLeader() {
+    return groupLeader;
+  }
 
   public static ArrayList<String> extractGroupMessage(String message) {
     ArrayList<String> result = new ArrayList<String>();

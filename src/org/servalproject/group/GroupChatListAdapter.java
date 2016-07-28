@@ -29,7 +29,11 @@ public class GroupChatListAdapter extends ArrayAdapter<GroupChat> {
       convertView = LayoutInflater.from(getContext()).inflate(R.layout.group_chat_item, parent, false);
     }
     TextView tvText = (TextView) convertView.findViewById(R.id.text_view_group_chat_text);
-    tvText.setText(chat.getShortSid() + ": " + chat.getContent());
+    if(chat.getIsMine()){
+      tvText.setText("Me: " + chat.getContent());
+    } else {
+      tvText.setText(chat.getShortSid() + ": " + chat.getContent());
+    }
 
     return convertView;
   }

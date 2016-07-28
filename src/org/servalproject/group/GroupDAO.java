@@ -22,6 +22,7 @@ public class GroupDAO {
   public static final String MESSAGES_COLUMN_TIMESTAMP = "timestamp";
   public static final String MESSAGES_COLUMN_DONE = "done";
   public static final String MESSAGES_COLUMN_CONTENT = "content";
+  public static final String MESSAGES_COLUMN_LEADER = "leader";
   public static final String MESSAGES_CREATE_TABLE = "CREATE TABLE " + 
     MESSAGES_TABLE_NAME + " (" +
     MESSAGES_COLUMN_ID + " INTEGER PRIMARY KEY, " + 
@@ -31,7 +32,8 @@ public class GroupDAO {
     MESSAGES_COLUMN_OBJECT_GROUP + " TEXT, " +
     MESSAGES_COLUMN_TIMESTAMP + " TEXT, " +
     MESSAGES_COLUMN_DONE + " INTEGER, " + 
-    MESSAGES_COLUMN_CONTENT + " TEXT)"; 
+    MESSAGES_COLUMN_CONTENT + " TEXT, " +
+    MESSAGES_COLUMN_LEADER + " TEXT) "; 
 
 
   public static final String MEMBERS_TABLE_NAME = "members";
@@ -40,13 +42,15 @@ public class GroupDAO {
   public static final String MEMBERS_COLUMN_SID = "sid";
   public static final String MEMBERS_COLUMN_MEMBER_NAME = "member_name";
   public static final String MEMBERS_COLUMN_GROUP_NAME = "group_name";
+  public static final String MEMBERS_COLUMN_LEADER = "leader";
   public static final String MEMBERS_CREATE_TABLE = "CREATE TABLE " + 
     MEMBERS_TABLE_NAME + " (" +
     MEMBERS_COLUMN_ID +  " INTEGER PRIMARY KEY, " + 
     MEMBERS_COLUMN_ROLE + " TEXT , " +
     MEMBERS_COLUMN_SID +  " TEXT , " +
     MEMBERS_COLUMN_GROUP_NAME +  " TEXT , " +
-    MEMBERS_COLUMN_MEMBER_NAME + " TEXT ) "; 
+    MEMBERS_COLUMN_MEMBER_NAME + " TEXT , " +
+    MEMBERS_COLUMN_LEADER + " TEXT)" ; 
 
 
   private SQLiteDatabase db;
@@ -66,6 +70,7 @@ public class GroupDAO {
     contentValues.put(MESSAGES_COLUMN_TIMESTAMP, gm.getTimestamp());
     contentValues.put(MESSAGES_COLUMN_DONE, gm.getDone());
     contentValues.put(MESSAGES_COLUMN_CONTENT, gm.getContent());
+    contentValues.put(MESSAGES_COLUMN_LEADER, gm.getGroupLeader());
     db.insert(MESSAGES_TABLE_NAME, null, contentValues);
     Log.d("GroupDbHelper", "insert");
     return true;
@@ -84,14 +89,14 @@ public class GroupDAO {
 
   }
 
-  public Long getLastMessageTimestamp(String sid) {
+  public Long getLastMessageTimestamp(String sid ) {
     
     Long result = Long.valueOf(0);
     Cursor c = db.rawQuery(
         "SELECT " + MESSAGES_COLUMN_TIMESTAMP + ", MAX(" + MESSAGES_COLUMN_TIMESTAMP + ") " +
         " FROM " + MESSAGES_TABLE_NAME + 
-        " WHERE " + MESSAGES_COLUMN_FROM_WHO + " = ? OR " + MESSAGES_COLUMN_TO_WHO + "= ?"
-        , new String[]{sid, sid});
+        " WHERE  " + MESSAGES_COLUMN_FROM_WHO + " = ? AND " + MESSAGES_COLUMN_DONE + "= ?"
+        , new String[]{sid, "1"});
     c.moveToFirst();
     if(c.getCount() > 0) {
       result = c.getLong(c.getColumnIndexOrThrow(MESSAGES_COLUMN_TIMESTAMP));
@@ -136,11 +141,11 @@ public class GroupDAO {
     return map;
   }
 
-  public ArrayList<GroupChat> getChatList(String group) {
+  public ArrayList<GroupChat> getChatList(String group, String leaderSid) {
     ArrayList<GroupChat> chatList = new ArrayList<GroupChat>();
     Cursor c = db.query(MESSAGES_TABLE_NAME, null, MESSAGES_COLUMN_TYPE + " = ? AND " + 
-        MESSAGES_COLUMN_OBJECT_GROUP + " = ? ",
-        new String[]{"CHAT", group}, null, null, null);
+        MESSAGES_COLUMN_OBJECT_GROUP + " = ? AND " + MESSAGES_COLUMN_LEADER + " = ? ",
+        new String[]{"CHAT", group, leaderSid}, null, null, null);
       
     while(c.moveToNext()){
       String groupName = c.getString(c.getColumnIndexOrThrow(MESSAGES_COLUMN_OBJECT_GROUP));
@@ -168,13 +173,45 @@ public class GroupDAO {
     contentValues.put(MEMBERS_COLUMN_ROLE, gm.getRole()); 
     contentValues.put(MEMBERS_COLUMN_SID, gm.getSid()); 
     contentValues.put(MEMBERS_COLUMN_MEMBER_NAME, gm.getMemberName()); 
+    contentValues.put(MEMBERS_COLUMN_LEADER, gm.getLeader()); 
     db.insert(MEMBERS_TABLE_NAME, null, contentValues);
     Log.d("GroupDbHelper", "insert member");
     return true;
   }
 
+  public void changeLeader(String groupName, String oldLeaderSid, String newLeaderSid) {
+    if (getGroup(groupName, oldLeaderSid) != null){
+      
+      Cursor c = db.query(MEMBERS_TABLE_NAME, null,
+          MEMBERS_COLUMN_GROUP_NAME + " = ? AND " + MEMBERS_COLUMN_LEADER + " = ? ", 
+          new String[]{groupName, oldLeaderSid}, null, null, null);
+      while(c.moveToNext()){
+        Integer id = c.getInt(c.getColumnIndexOrThrow(MEMBERS_COLUMN_ID));
+        String sid = c.getString(c.getColumnIndexOrThrow(MEMBERS_COLUMN_SID));
+        String role = c.getString(c.getColumnIndexOrThrow(MEMBERS_COLUMN_ROLE));
+      
+        if(sid.equals(oldLeaderSid)){
+          deleteMember(new GroupMember(groupName, oldLeaderSid, "LEADER", oldLeaderSid, ""));
+          continue;
+        } else if(sid.equals(newLeaderSid)) {
+          role = "LEADER"; 
+        }
+
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(MEMBERS_COLUMN_GROUP_NAME, groupName); 
+        contentValues.put(MEMBERS_COLUMN_ROLE, role); 
+        contentValues.put(MEMBERS_COLUMN_SID, sid); 
+        contentValues.put(MEMBERS_COLUMN_MEMBER_NAME, ""); 
+        contentValues.put(MEMBERS_COLUMN_LEADER, newLeaderSid); 
+        db.update(MEMBERS_TABLE_NAME, contentValues, MEMBERS_COLUMN_ID+ " = " + id, null);
+
+      }
+      c.close();
+    }
+  }
+
   public void updateGroup(Group group) {
-    Group oldGroup = getGroup(group.getName());
+    Group oldGroup = getGroup(group.getName(), group.getLeader());
     if (oldGroup != null){
       for(GroupMember gm: oldGroup.getMembers()) {
         if(!group.getMembers().contains(gm)) 
@@ -187,36 +224,31 @@ public class GroupDAO {
     } else {
       for(GroupMember gm : group.getMembers()) {
         insertMember(gm);  
-      } 
-      insertMember(group.getLeader());
+      }
+      insertMember(new GroupMember(group.getName(), group.getLeader() ,"LEADER", group.getLeader(), ""));
     }
   }
   
-  public Group getGroup(String groupName) {
+  public Group getGroup(String groupName, String leaderSid) {
     ArrayList<GroupMember> gmList = new ArrayList<GroupMember>();
-    GroupMember leader = new GroupMember(groupName, "LEADER","","");
-    Cursor c = db.query(MEMBERS_TABLE_NAME, null, MEMBERS_COLUMN_GROUP_NAME + " = ?",
-        new String[]{groupName}, null, null, null, null);  
-    while(c.moveToNext()){ 
+    Cursor c = db.query(MEMBERS_TABLE_NAME, new String[]{MEMBERS_COLUMN_SID, MEMBERS_COLUMN_ROLE}, MEMBERS_COLUMN_GROUP_NAME + " = ? AND " + MEMBERS_COLUMN_LEADER + " = ? " ,
+        new String[]{groupName, leaderSid}, null, null, null, null);  
+    while(c.moveToNext()){  
       String memberSid = c.getString(c.getColumnIndexOrThrow(MEMBERS_COLUMN_SID));
       String memberRole = c. getString(c.getColumnIndexOrThrow(MEMBERS_COLUMN_ROLE));
-      if(memberRole.equals("LEADER")){
-        leader.setSid(memberSid); 
-      }
-      else{
-        gmList.add(new GroupMember(groupName, memberRole, memberSid, ""));
-      }
+      if (memberRole.equals("MEMBER"))
+        gmList.add(new GroupMember(groupName, leaderSid, memberRole, memberSid, ""));
     }
     c.close();
-    if (!leader.getSid().equals(""))
-      return new Group(groupName, gmList, leader);
+    if (gmList.size() > 0)
+      return new Group(groupName, gmList, leaderSid, false);
     else
       return null;
   }
  
   public boolean deleteMember(GroupMember gm) {
     Cursor c = db.query(MEMBERS_TABLE_NAME, new String[]{MEMBERS_COLUMN_ID},
-        MEMBERS_COLUMN_ROLE + "= ? AND " + MEMBERS_COLUMN_SID + "= ? AND " + MEMBERS_COLUMN_GROUP_NAME + " = ?", new String[]{gm.getRole(), gm.getSid(), gm.getGroupName()}, null, null, null);
+        MEMBERS_COLUMN_ROLE + "= ? AND " + MEMBERS_COLUMN_SID + "= ? AND " + MEMBERS_COLUMN_GROUP_NAME + " = ? AND " + MEMBERS_COLUMN_LEADER + " = ? ", new String[]{gm.getRole(), gm.getSid(), gm.getGroupName(), gm.getLeader()}, null, null, null);
     c.moveToFirst(); 
     if(c.getCount() > 0){
       Integer id = c.getInt(c.getColumnIndexOrThrow(MEMBERS_COLUMN_ID));
@@ -228,12 +260,12 @@ public class GroupDAO {
     return false;
   }
 
-  public ArrayList<String> getMemberList(String groupName) {
+  public ArrayList<String> getMemberList(String groupName, String groupLeader) {
     ArrayList<String> list = new ArrayList<String>();
 
     Cursor c = db.query(MEMBERS_TABLE_NAME, null,
-        MEMBERS_COLUMN_GROUP_NAME + "= ?" , 
-        new String[]{groupName}, null, null, null, null);
+        MEMBERS_COLUMN_GROUP_NAME + "= ? AND " + MEMBERS_COLUMN_LEADER + " = ? " , 
+        new String[]{groupName, groupLeader}, null, null, null, null);
     while(c.moveToNext()){
       String member = c.getString(c.getColumnIndexOrThrow("sid"));
       if (!member.equals(mySid)){
@@ -241,22 +273,20 @@ public class GroupDAO {
       }
     }
     c.close();
-
-
     return list;
   }
 
   public void createGroup(String groupName, String mySid, String myName) {
 
-    GroupMember leader = new GroupMember(groupName, "LEADER", mySid, myName);
+    GroupMember leader = new GroupMember(groupName, mySid, "LEADER", mySid, myName);
     insertMember(leader);
 
   }
 
-  public void deleteGroup(String groupName) {
+  public void deleteGroup(String groupName, String groupLeader) {
   
     Cursor c = db.query(MEMBERS_TABLE_NAME, new String[]{MEMBERS_COLUMN_ID},
-        MEMBERS_COLUMN_GROUP_NAME + "= ?", new String[]{groupName}, null, null, null);
+        MEMBERS_COLUMN_GROUP_NAME + " = ? AND " + MEMBERS_COLUMN_LEADER + " = ? ", new String[]{groupName, groupLeader}, null, null, null);
     while(c.moveToNext()) {
       Integer id = c.getInt(c.getColumnIndexOrThrow(MEMBERS_COLUMN_ID));
       db.delete(MEMBERS_TABLE_NAME, "id = " + Integer.toString(id) , null);
@@ -270,7 +300,7 @@ public class GroupDAO {
         MEMBERS_COLUMN_ROLE + "= ? AND " + MEMBERS_COLUMN_SID + "= ?", new String[]{"LEADER", mySid}, null, null, null);
     while(c.moveToNext()) {
       String groupName = c.getString(c.getColumnIndexOrThrow(MEMBERS_COLUMN_GROUP_NAME));
-      Group group = new Group(groupName); 
+      Group group = new Group(groupName, new ArrayList<GroupMember>(), mySid, true); 
       groupList.add(group);
     }
     return groupList;
@@ -278,12 +308,15 @@ public class GroupDAO {
 
   public ArrayList<Group> getOtherGroupList(){
     ArrayList<Group> groupList = new ArrayList<Group>();
-    Cursor c = db.query(MEMBERS_TABLE_NAME, new String[]{MEMBERS_COLUMN_GROUP_NAME},
-        MEMBERS_COLUMN_ROLE + "= ? AND " + MEMBERS_COLUMN_SID + "= ?", new String[]{"MEMBER", mySid}, null, null, null);
+    Cursor c = db.query(MEMBERS_TABLE_NAME, new String[]{MEMBERS_COLUMN_GROUP_NAME, MEMBERS_COLUMN_SID},
+        MEMBERS_COLUMN_ROLE + "= ? " , new String[]{"LEADER"}, null, null, null);
     while(c.moveToNext()) {
       String groupName = c.getString(c.getColumnIndexOrThrow(MEMBERS_COLUMN_GROUP_NAME));
-      Group group = new Group(groupName); 
-      groupList.add(group);
+      String leaderSid = c.getString(c.getColumnIndexOrThrow(MEMBERS_COLUMN_SID));
+      if (!leaderSid.equals(mySid)) {
+        Group group = new Group(groupName, new ArrayList<GroupMember>(), leaderSid, false); 
+        groupList.add(group);
+      }
     }
     return groupList;
   }

@@ -149,7 +149,11 @@
 
     <!-- group setting -->
     <string name="group_broadcast_button">broadcast</string> 
-    <string name="group_create_button">create group</string>
+    <string name="group_create_button">create</string>
+    <string name="group_destroy_button">destroy</string>
+    <string name="group_peer_join_button">join</string>
+    <string name="group_peer_leave_button">leave</string>
     <string name="group_list_header">My groups</string> 
+    <string name="group_peer_header">Peers</string> 
     <string name="group_member_header">Group Members</string>   
 </resources>

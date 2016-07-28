@@ -35,6 +35,7 @@ import org.servalproject.servaldna.ServalDCommand;
 import org.servalproject.servaldna.ServalDFailureException;
 import org.servalproject.servaldna.ServalDInterfaceException;
 import org.servalproject.servaldna.keyring.KeyringIdentity;
+import org.servalproject.group.GroupService;
 
 import java.io.EOFException;
 import java.io.File;
@@ -50,6 +51,7 @@ public class Rhizome {
 
 	public static final String ACTION_RECEIVE_FILE = "org.servalproject.rhizome.RECEIVE_FILE";
 	public static final String RECEIVE_PERMISSION = "org.servalproject.rhizome.RECEIVE_FILE";
+	public static final String NEW_MESSAGES="org.servalproject.meshms.NEW";
 
 	/** Unshare a file (payload) that already exists in the rhizome store, by setting
 	 * its payload to empty.
@@ -414,7 +416,21 @@ public class Rhizome {
 						} else {
 							manifest = readManifest(bid);
 						}
-
+            if(manifest instanceof RhizomeManifest_MeshMS){
+              ServalBatPhoneApplication app = ServalBatPhoneApplication.context;
+              KeyringIdentity identity = ServalBatPhoneApplication.context.server.getIdentity();
+              RhizomeManifest_MeshMS meshms = (RhizomeManifest_MeshMS) manifest;
+              if (identity!=null && identity.sid.equals(meshms.getRecipient()))
+                if (ServalBatPhoneApplication.context.meshMS!=null){
+                  Log.d(TAG, "new bundle!!"); 
+                  Intent intent = new Intent(NEW_MESSAGES);
+                  intent.putExtra("sender", meshms.getSender().toString());
+                  app.sendBroadcast(intent);
+                  Intent intentGroupService = new Intent(ServalBatPhoneApplication.context, GroupService.class);
+                  intentGroupService.putExtra("sender", meshms.getSender().toString());
+                  app.startService(intentGroupService);
+            }
+            }
 						ServalBatPhoneApplication.context.runOnBackgroundThread(new ExamineBundle(manifest));
 					} catch (Exception e) {
 						Log.v(TAG, e.getMessage(), e);

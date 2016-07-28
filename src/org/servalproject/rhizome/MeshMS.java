@@ -38,13 +38,13 @@ public class MeshMS {
 		if (sid.equals(meshms.getRecipient())){
       Log.d("MeshMS_","sender: " + meshms.getSender().toString());
 			initialiseNotification();
-      Intent intent = new Intent(NEW_MESSAGES);
-      intent.putExtra("sender", meshms.getSender().toString());
-			app.sendBroadcast(intent);
-      
-      Intent intentGroupService = new Intent(ServalBatPhoneApplication.context, GroupService.class);
-      intentGroupService.putExtra("sender", meshms.getSender().toString());
-      app.startService(intentGroupService);
+//      Intent intent = new Intent(NEW_MESSAGES);
+//      intent.putExtra("sender", meshms.getSender().toString());
+//			app.sendBroadcast(intent);
+//      
+//      Intent intentGroupService = new Intent(ServalBatPhoneApplication.context, GroupService.class);
+//      intentGroupService.putExtra("sender", meshms.getSender().toString());
+//      app.startService(intentGroupService);
 		}
 	}
 

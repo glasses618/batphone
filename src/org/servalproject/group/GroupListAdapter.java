@@ -17,7 +17,7 @@ import java.util.ArrayList;
 
 public class GroupListAdapter extends ArrayAdapter<Group> {
 
-  private static final String  TAG = "GroupListAdapter";
+  private static final String TAG = "GroupListAdapter";
   public GroupListAdapter(Context context, ArrayList<Group> groups) {
     super(context, 0, groups);
   }
@@ -30,13 +30,18 @@ public class GroupListAdapter extends ArrayAdapter<Group> {
       convertView = LayoutInflater.from(getContext()).inflate(R.layout.group_list_item, parent, false);
     }
       TextView tvName = (TextView) convertView.findViewById(R.id.text_view_group_name);
-      tvName.setText(group.getName());
+      if(group.getIsMyGroup()){
+        tvName.setText(group.getName() + "(OWN)");
+      } else {
+        tvName.setText(group.getName() + "(" + group.getLeaderAbbreviation() + ")");
+      }
       tvName.setOnClickListener(new OnClickListener(){
         @Override
         public void onClick(View view){
           Log.d(TAG,"clicked!!");
           Intent intent = new Intent(getContext(), GroupChatActivity.class);
           intent.putExtra("group_name", group.getName());
+          intent.putExtra("leader_sid", group.getLeader());
           getContext().startActivity(intent);
 
         }

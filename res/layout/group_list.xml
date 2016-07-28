@@ -39,12 +39,63 @@
       android:id="@+id/button_create_group"
       android:text="@string/group_create_button"
       />
+    <Button 
+      android:layout_width="0dp"
+      android:layout_weight="1"
+      android:layout_height="wrap_content"
+      android:id="@+id/button_destroy_group"
+      android:text="@string/group_destroy_button"
+      />
   </LinearLayout> 
 
   <ListView
     android:id="@+id/list_view_group"
     style="@style/grouplist"
     android:layout_below="@id/linear_layout_create_group"
+    android:divider="@color/green"
+    android:dividerHeight="2dp" />
+ 
+  <TextView
+    android:id="@+id/group_peer_header"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_centerHorizontal="true"
+    android:text="@string/group_peer_header"
+    android:textSize="20sp"
+    android:textStyle="bold"
+    android:layout_below="@id/list_view_group"
+    />
+  <LinearLayout 
+    android:layout_below="@id/group_peer_header"
+    android:id="@+id/linear_layout_group_peer_action"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+    <EditText 
+      android:layout_width="0dp"
+      android:layout_weight="2"
+      android:layout_height="wrap_content"
+      android:id="@+id/edit_text_group_peer"/>
+    <Button 
+      android:layout_width="0dp"
+      android:layout_weight="1"
+      android:layout_height="wrap_content"
+      android:id="@+id/button_join_group"
+      android:text="@string/group_peer_join_button"
+      />
+    <Button 
+      android:layout_width="0dp"
+      android:layout_weight="1"
+      android:layout_height="wrap_content"
+      android:id="@+id/button_leave_group"
+      android:text="@string/group_peer_leave_button"
+      />
+  </LinearLayout> 
+  <ListView
+    android:id="@+id/list_view_group_peer"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:layout_below="@id/linear_layout_group_peer_action"
     android:divider="@color/green"
     android:dividerHeight="2dp" />
 

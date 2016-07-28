@@ -2,10 +2,12 @@ package org.servalproject.group;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class Group {
   private String name = "";
-  private GroupMember leader;
+  private String leader;
+  private boolean isMyGroup;
   private ArrayList<GroupMember> members = new ArrayList<GroupMember>();
 //  public GroupType type;
 
@@ -13,10 +15,11 @@ public class Group {
     this.name = name;
   }
   
-  Group(String name, ArrayList<GroupMember> members, GroupMember leader) {
+  Group(String name, ArrayList<GroupMember> members, String leader, boolean isMyGroup) {
    this.name = name;
    this.members = members;
    this.leader = leader;
+   this.isMyGroup = isMyGroup;
   }
     
   public String getName(){
@@ -27,9 +30,18 @@ public class Group {
     return members;
   }
 
-  public GroupMember getLeader(){
+  public String getLeader(){
     return leader;
   }
+
+  public boolean getIsMyGroup(){
+    return isMyGroup;
+  } 
+
+  public String getLeaderAbbreviation(){
+    return leader.substring(0,5) + "*";
+  }
+
 //  public enum GroupType {
 //    OWN, MEMBER_OF, OTHER
 //  }
@@ -56,4 +68,21 @@ public class Group {
 //    }
 //    return memberSidList;
 //  }
+  @Override 
+  public boolean equals(Object o) {
+    if(o instanceof Group){
+      Group toCompare = (Group) o;
+      return this.leader.equals(toCompare.getLeader()) &&
+        this.name.equals(toCompare.getName());
+    }
+    return false;
+  }
+  
+  @Override
+  public int hashCode() {
+    return Objects.hash(name, leader);
+  }
+
+
+
 } 

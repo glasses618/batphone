@@ -24,6 +24,7 @@ public class GroupMemberActivity extends Activity {
   private static final String TAG = "GroupMemberActivity";
   private ArrayList<String> members = new ArrayList<String>();
   private String groupName;
+  private String groupLeader;
   private GroupMemberListAdapter adapter;
   private ListView groupMemberListView;
   private GroupDAO groupDAO;
@@ -39,8 +40,9 @@ public class GroupMemberActivity extends Activity {
       this.identity = app.server.getIdentity();
       Intent intent = getIntent();
       groupName =  intent.getStringExtra("group_name");
+      groupLeader = intent.getStringExtra("group_leader");
       groupDAO= new GroupDAO(getApplicationContext(),identity.sid.toString());
-      members = groupDAO.getMemberList(groupName);
+      members = groupDAO.getMemberList(groupName, groupLeader);
     } catch(Exception e) {
       Log.e(TAG, e.getMessage(), e);
     }
