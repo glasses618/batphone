@@ -24,6 +24,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.HashMap;
+import java.util.Stack;
 
 
 public class GroupService extends Service {
@@ -140,7 +141,7 @@ public class GroupService extends Service {
     public GroupMessageTask(Context context){
       mContext = context;
     }
-    
+
     @Override
     protected Void doInBackground(SubscriberId... args) {
       try{
@@ -158,6 +159,7 @@ public class GroupService extends Service {
         Log.d(TAG,"current time:" + tff.format(new Date(System.currentTimeMillis())));
         groupDAO = new GroupDAO(getApplicationContext(),identity.sid.toString());
         Long lastMessageTime = groupDAO.getLastMessageTimestamp(sender.toString());
+        Stack<MeshMSMessage> itemStack = new Stack<MeshMSMessage>();
         while((item = results.nextMessage())!=null){
 
           if(item.type == MeshMSMessage.Type.MESSAGE_RECEIVED && GroupMessage.extractGroupMessage(item.text) != null) {
@@ -168,68 +170,63 @@ public class GroupService extends Service {
                 + item.text);
             if(item.timestamp*1000 <= lastMessageTime)
               continue;
-
-            ArrayList<String> extractResults = GroupMessage.extractGroupMessage(item.text);
-            String groupOperation = extractResults.get(0);
-            String groupName = extractResults.get(1);
-            String groupLeaderSid = extractResults.get(2);
-            
-            if(groupOperation.equals("JOIN")) {
-              groupDAO.insertMessage(new GroupMessage("JOIN", sender.toString(), receiver.toString(),
-                    groupName, item.timestamp*1000, 0, "", groupLeaderSid));
-            } else if(groupOperation.equals("LEAVE")) {  
-              groupDAO.insertMessage(new GroupMessage("LEAVE", sender.toString(), receiver.toString(),
-                    groupName, item.timestamp*1000 , 0, "", groupLeaderSid));
-            } else if(groupOperation.equals("CHAT")) {
-
-              String text = TextUtils.join(",",extractResults.subList(3, extractResults.size()));
-              groupDAO.insertMessage(new GroupMessage("CHAT", sender.toString(), receiver.toString(),
-                    groupName, item.timestamp*1000, 1, text, groupLeaderSid));
-              Intent intent = new Intent(NEW_CHAT_MESSAGE_ACTION);
-              app.sendBroadcast(intent);            
-            } else if(groupOperation.equals("DONE_LEAVE")){
-              groupDAO.deleteGroup(groupName, groupLeaderSid);
-              groupDAO.insertMessage(new GroupMessage("DONE_LEAVE", sender.toString(), receiver.toString(),
-                    groupName, item.timestamp*1000, 1, "", groupLeaderSid));
-            } else if(groupOperation.equals("UPDATE")) {
-              ArrayList<GroupMember> members = new ArrayList<GroupMember>();
-              Log.d(TAG, "UPDATE!!" + " TABLE NAME= " + groupName);
-              for (String member : extractResults.subList(3, extractResults.size())) {
-                members.add(new GroupMember(groupName, groupLeaderSid, "MEMBER", member, ""));
-                Log.d(TAG, "member " + member);
-              }
-              groupDAO.updateGroup(new Group(groupName, members, groupLeaderSid, false));
-              groupDAO.insertMessage(new GroupMessage("UPDATE", sender.toString(), receiver.toString(),
-                    groupName, item.timestamp*1000, 1, "", groupLeaderSid));
-              app.sendBroadcast(new Intent(UPDATE_GROUP_ACTION));
-            } else if(groupOperation.equals("CHANGE_LEADER")) { 
-              String oldLeader = groupLeaderSid; 
-              String newLeader = extractResults.get(3);
-              Log.d(TAG,"Change Leader: group: " + groupName + ", from: " + oldLeader + ", to: " + newLeader);
-              groupDAO.changeLeader(groupName, oldLeader, newLeader);
-              groupDAO.insertMessage(new GroupMessage("CHANGE_LEADER", sender.toString(), receiver.toString(),
-                    groupName, item.timestamp*1000, 1, "", groupLeaderSid));
-            }
-
+            itemStack.push(item); 
           }
-          switch(item.type){
-            case MESSAGE_SENT:
-              break;
-            case MESSAGE_RECEIVED:
-              break;
-            default:
-              continue;
-          }
-
         }
-
-
-
+        while(!itemStack.empty()){
+          processGroupMessage(sender.toString(), receiver.toString(), itemStack.pop());
+        }
       }catch(Exception e) {
         Log.e(TAG, e.getMessage(), e);
         app.displayToastMessage(e.getMessage());
       }
       return null;
+    }
+
+    private void processGroupMessage(String sender, String receiver, MeshMSMessage item){
+      ArrayList<String> extractResults = GroupMessage.extractGroupMessage(item.text);
+      String groupOperation = extractResults.get(0);
+      String groupName = extractResults.get(1);
+      String groupLeaderSid = extractResults.get(2);
+      Long timestamp = item.timestamp*1000;
+
+      if(groupOperation.equals("JOIN")) {
+        groupDAO.insertMessage(new GroupMessage("JOIN", sender, receiver,
+              groupName, timestamp, 0, "", groupLeaderSid));
+      } else if(groupOperation.equals("LEAVE")) {  
+        groupDAO.insertMessage(new GroupMessage("LEAVE", sender, receiver,
+              groupName, timestamp, 0, "", groupLeaderSid));
+      } else if(groupOperation.equals("CHAT")) {
+
+        String text = TextUtils.join(",",extractResults.subList(3, extractResults.size()));
+        groupDAO.insertMessage(new GroupMessage("CHAT", sender, receiver,
+              groupName, timestamp, 1, text, groupLeaderSid));
+        Intent intent = new Intent(NEW_CHAT_MESSAGE_ACTION);
+        app.sendBroadcast(intent);            
+      } else if(groupOperation.equals("DONE_LEAVE")){
+        groupDAO.deleteGroup(groupName, groupLeaderSid);
+        groupDAO.insertMessage(new GroupMessage("DONE_LEAVE", sender, receiver,
+              groupName, timestamp, 1, "", groupLeaderSid));
+      } else if(groupOperation.equals("UPDATE")) {
+        ArrayList<GroupMember> members = new ArrayList<GroupMember>();
+        Log.d(TAG, "UPDATE!!" + " TABLE NAME= " + groupName);
+        for (String member : extractResults.subList(3, extractResults.size())) {
+          members.add(new GroupMember(groupName, groupLeaderSid, "MEMBER", member, ""));
+          Log.d(TAG, "member " + member);
+        }
+        groupDAO.updateGroup(new Group(groupName, members, groupLeaderSid, false));
+        groupDAO.insertMessage(new GroupMessage("UPDATE", sender, receiver,
+              groupName, timestamp, 1, "", groupLeaderSid));
+        app.sendBroadcast(new Intent(UPDATE_GROUP_ACTION));
+      } else if(groupOperation.equals("CHANGE_LEADER")) { 
+        String oldLeader = groupLeaderSid; 
+        String newLeader = extractResults.get(3);
+        Log.d(TAG,"Change Leader: group: " + groupName + ", from: " + oldLeader + ", to: " + newLeader);
+        groupDAO.changeLeader(groupName, oldLeader, newLeader);
+        groupDAO.insertMessage(new GroupMessage("CHANGE_LEADER", sender, receiver,
+              groupName, timestamp, 1, "", groupLeaderSid));
+      }
+
     }
   }
 
