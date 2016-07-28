@@ -190,7 +190,7 @@ public class GroupService extends Service {
             } else if(groupOperation.equals("DONE_LEAVE")){
               groupDAO.deleteGroup(groupName, groupLeaderSid);
               groupDAO.insertMessage(new GroupMessage("DONE_LEAVE", sender.toString(), receiver.toString(),
-                    groupName, item.timestamp*1000, 0, "", groupLeaderSid));
+                    groupName, item.timestamp*1000, 1, "", groupLeaderSid));
             } else if(groupOperation.equals("UPDATE")) {
               ArrayList<GroupMember> members = new ArrayList<GroupMember>();
               Log.d(TAG, "UPDATE!!" + " TABLE NAME= " + groupName);
@@ -200,7 +200,7 @@ public class GroupService extends Service {
               }
               groupDAO.updateGroup(new Group(groupName, members, groupLeaderSid, false));
               groupDAO.insertMessage(new GroupMessage("UPDATE", sender.toString(), receiver.toString(),
-                    groupName, item.timestamp*1000, 0, "", groupLeaderSid));
+                    groupName, item.timestamp*1000, 1, "", groupLeaderSid));
               app.sendBroadcast(new Intent(UPDATE_GROUP_ACTION));
             } else if(groupOperation.equals("CHANGE_LEADER")) { 
               String oldLeader = groupLeaderSid; 
@@ -208,7 +208,7 @@ public class GroupService extends Service {
               Log.d(TAG,"Change Leader: group: " + groupName + ", from: " + oldLeader + ", to: " + newLeader);
               groupDAO.changeLeader(groupName, oldLeader, newLeader);
               groupDAO.insertMessage(new GroupMessage("CHANGE_LEADER", sender.toString(), receiver.toString(),
-                    groupName, item.timestamp*1000, 0, "", groupLeaderSid));
+                    groupName, item.timestamp*1000, 1, "", groupLeaderSid));
             }
 
           }
