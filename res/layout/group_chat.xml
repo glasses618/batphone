@@ -55,7 +55,7 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:layout_above="@id/edit_text_group_message_content"
-    android:layout_below="@id/group_chat_title"
+    android:layout_below="@id/button_show_group_member"
     android:divider="@color/black"
     android:dividerHeight="0px" />
 
