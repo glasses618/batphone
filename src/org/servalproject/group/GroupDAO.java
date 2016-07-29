@@ -77,13 +77,13 @@ public class GroupDAO {
   }
 
   public boolean deleteMessage(Integer id) {
-    return db.delete(MESSAGES_TABLE_NAME, "id = " + id , null) > 0;
+    return db.delete(MESSAGES_TABLE_NAME, MESSAGES_COLUMN_ID + " = " + id , null) > 0;
   }
 
   public boolean doneMessage(Integer id) {
     ContentValues contentValues = new ContentValues();
     contentValues.put(MESSAGES_COLUMN_DONE, 1);
-    db.update(MESSAGES_TABLE_NAME, contentValues, "id = ?", new String[] {Integer.toString(id)});
+    db.update(MESSAGES_TABLE_NAME, contentValues, MESSAGES_COLUMN_ID+ " = ?", new String[] {Integer.toString(id)});
     Log.d("GroupDbHelper", "done");
     return true;
 
@@ -110,7 +110,7 @@ public class GroupDAO {
 
     Cursor c = db.query(MESSAGES_TABLE_NAME,
         new String[]{MESSAGES_COLUMN_ID, MESSAGES_COLUMN_FROM_WHO, MESSAGES_COLUMN_OBJECT_GROUP},
-        "type = ? and done = ? ", new String[]{"JOIN", "0"}, null, null, null );
+        MESSAGES_COLUMN_TYPE + " = ? AND " + MESSAGES_COLUMN_DONE + " = ? ", new String[]{"JOIN", "0"}, null, null, null );
 
     while(c.moveToNext()) {
       String from = c.getString(c.getColumnIndexOrThrow(MESSAGES_COLUMN_FROM_WHO));
@@ -128,7 +128,7 @@ public class GroupDAO {
 
     Cursor c = db.query(MESSAGES_TABLE_NAME,
         new String[]{MESSAGES_COLUMN_ID, MESSAGES_COLUMN_FROM_WHO, MESSAGES_COLUMN_OBJECT_GROUP},
-        "type = ? and done = ? ", new String[]{"LEAVE", "0"}, null, null, null );
+        MESSAGES_COLUMN_TYPE + " = ? AND " + MESSAGES_COLUMN_DONE + " = ? ", new String[]{"LEAVE", "0"}, null, null, null );
 
     while(c.moveToNext()) {
       String from = c.getString(c.getColumnIndexOrThrow(MESSAGES_COLUMN_FROM_WHO));
@@ -253,7 +253,7 @@ public class GroupDAO {
     if(c.getCount() > 0){
       Integer id = c.getInt(c.getColumnIndexOrThrow(MEMBERS_COLUMN_ID));
       
-    return db.delete(MEMBERS_TABLE_NAME, "id = " + Integer.toString(id) , null) > 0;
+    return db.delete(MEMBERS_TABLE_NAME, MEMBERS_COLUMN_ID + " = " + Integer.toString(id) , null) > 0;
    
     }
     c.close();
@@ -284,10 +284,14 @@ public class GroupDAO {
         new String[]{groupName, groupLeader}, null, null, null, null);
     while(c.moveToNext()){
       String member = c.getString(c.getColumnIndexOrThrow("sid"));
-      if (!member.equals(mySid)){
-        list.add(member.substring(0,5) + "*");
-      } else {
-        list.add(0, member.substring(0,5) + "* (Me)");
+      if (!member.equals(mySid) && member.equals(groupLeader)){
+        list.add(member.substring(0,5) + "* (Leader)");
+      } else if (!member.equals(mySid)){
+        list.add(member.substring(0,5) + "* ");
+      } else if (member.equals(groupLeader)){
+        list.add(member.substring(0,5) + "* (Me, Leader)");
+      } else { 
+        list.add(member.substring(0,5) + "* (Me)");
       }
     }
     c.close();
@@ -307,7 +311,7 @@ public class GroupDAO {
         MEMBERS_COLUMN_GROUP_NAME + " = ? AND " + MEMBERS_COLUMN_LEADER + " = ? ", new String[]{groupName, groupLeader}, null, null, null);
     while(c.moveToNext()) {
       Integer id = c.getInt(c.getColumnIndexOrThrow(MEMBERS_COLUMN_ID));
-      db.delete(MEMBERS_TABLE_NAME, "id = " + Integer.toString(id) , null);
+      db.delete(MEMBERS_TABLE_NAME, MEMBERS_COLUMN_ID + " = " + Integer.toString(id) , null);
     }
     c.close();
   }
