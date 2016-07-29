@@ -37,7 +37,9 @@ public class GroupChatActivity extends Activity{
   private ArrayList<String> members = new ArrayList<String>();
   private ListView list;
   private Button buttonSendGroupMessage;
+  private Button buttonShowGroupMember;
   private EditText etGroupMessageContent;
+  private TextView tvTitle;
   private String groupName;
   private String groupLeaderSid;
   private GroupDAO groupDAO;
@@ -51,13 +53,16 @@ public class GroupChatActivity extends Activity{
       app = ServalBatPhoneApplication.context;
       this.identity = app.server.getIdentity();
       buttonSendGroupMessage = (Button) findViewById(R.id.button_send_group_message);
+      buttonShowGroupMember = (Button) findViewById(R.id.button_show_group_member);
       etGroupMessageContent = (EditText) findViewById(R.id.edit_text_group_message_content);
+      tvTitle = (TextView) findViewById(R.id.group_chat_title);
       list = (ListView) findViewById(R.id.list_view_group_chat);
-      setupButtonListener();
       Intent intent = getIntent();
       groupName =  intent.getStringExtra("group_name");
+      tvTitle.setText(groupName);
       groupLeaderSid = intent.getStringExtra("leader_sid");
       groupDAO= new GroupDAO(getApplicationContext(),identity.sid.toString());
+      setupButtonListener();
       updateGroupMembers();
       notifyGroupMember();
     }catch(Exception e) {
@@ -111,7 +116,16 @@ public class GroupChatActivity extends Activity{
 
       }
     });
-
+    
+    buttonShowGroupMember.setOnClickListener(new View.OnClickListener(){
+      @Override
+      public void onClick(View v) {
+        Intent intent = new Intent(GroupChatActivity.this, GroupMemberActivity.class);
+        intent.putExtra("group_name", groupName);
+        intent.putExtra("group_leader", groupLeaderSid);
+        GroupChatActivity.this.startActivity(intent); 
+      }
+    });
   }
 
   private void updateGroupMembers(){

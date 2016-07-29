@@ -95,8 +95,8 @@ public class GroupDAO {
     Cursor c = db.rawQuery(
         "SELECT " + MESSAGES_COLUMN_TIMESTAMP + ", MAX(" + MESSAGES_COLUMN_TIMESTAMP + ") " +
         " FROM " + MESSAGES_TABLE_NAME + 
-        " WHERE  " + MESSAGES_COLUMN_FROM_WHO + " = ? AND " + MESSAGES_COLUMN_DONE + "= ?"
-        , new String[]{sid, "1"});
+        " WHERE  " + MESSAGES_COLUMN_FROM_WHO + " = ? "
+        , new String[]{sid});
     c.moveToFirst();
     if(c.getCount() > 0) {
       result = c.getLong(c.getColumnIndexOrThrow(MESSAGES_COLUMN_TIMESTAMP));
@@ -270,6 +270,24 @@ public class GroupDAO {
       String member = c.getString(c.getColumnIndexOrThrow("sid"));
       if (!member.equals(mySid)){
         list.add(member);
+      }
+    }
+    c.close();
+    return list;
+  }
+
+  public ArrayList<String> getAbbreviationMemberList(String groupName, String groupLeader) {
+    ArrayList<String> list = new ArrayList<String>();
+
+    Cursor c = db.query(MEMBERS_TABLE_NAME, null,
+        MEMBERS_COLUMN_GROUP_NAME + "= ? AND " + MEMBERS_COLUMN_LEADER + " = ? " , 
+        new String[]{groupName, groupLeader}, null, null, null, null);
+    while(c.moveToNext()){
+      String member = c.getString(c.getColumnIndexOrThrow("sid"));
+      if (!member.equals(mySid)){
+        list.add(member.substring(0,5) + "*");
+      } else {
+        list.add(0, member.substring(0,5) + "* (Me)");
       }
     }
     c.close();

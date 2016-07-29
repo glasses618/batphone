@@ -42,7 +42,7 @@ public class GroupMemberActivity extends Activity {
       groupName =  intent.getStringExtra("group_name");
       groupLeader = intent.getStringExtra("group_leader");
       groupDAO= new GroupDAO(getApplicationContext(),identity.sid.toString());
-      members = groupDAO.getMemberList(groupName, groupLeader);
+      members = groupDAO.getAbbreviationMemberList(groupName, groupLeader);
     } catch(Exception e) {
       Log.e(TAG, e.getMessage(), e);
     }

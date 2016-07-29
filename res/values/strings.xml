@@ -156,4 +156,6 @@
     <string name="group_list_header">My groups</string> 
     <string name="group_peer_header">Peers</string> 
     <string name="group_member_header">Group Members</string>   
+    <string name="group_chat_header">Group Chat</string>   
+    <string name="show_group_member">Member List</string>   
 </resources>

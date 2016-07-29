@@ -1,18 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+  android:layout_width="match_parent"
+  android:layout_height="match_parent" >
 
-    <TextView
-        android:id="@+id/group_chat_title"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="5dp"
-        android:textSize="22sp"
-        android:textStyle="bold"
-        android:ellipsize="end"
-        />
+  <TextView
+    android:id="@+id/group_chat_title"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:layout_alignParentTop="true"
+    android:layout_marginTop="5dp"
+    android:layout_toLeftOf="@+id/button_send_group_message"
+    android:layout_marginRight="1dp"
+    android:textSize="22sp"
+    android:textStyle="bold"
+    android:ellipsize="end"
+    />
+
+  <Button
+    android:id="@+id/button_show_group_member"
+ 		android:textSize="13sp"
+		android:textColor="@color/white"  
+		android:background="@drawable/button_message" 		 		
+    android:layout_width="65dp"
+    android:layout_height="40dp"
+    android:layout_alignTop="@id/group_chat_title"
+    android:layout_marginTop="5dp"
+    android:layout_alignParentRight="true"
+    android:text="@string/show_group_member" />
+  
   <EditText
     android:id="@+id/edit_text_group_message_content"
     android:layout_width="fill_parent"
@@ -34,14 +49,14 @@
     android:layout_alignBottom="@id/edit_text_group_message_content"
     android:layout_alignParentRight="true"
     android:text="@string/new_message_ui_btn_send_message" />
-   
-    <ListView
-      android:id="@+id/list_view_group_chat"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_above="@id/edit_text_group_message_content"
-        android:layout_below="@id/group_chat_title"
-        android:divider="@color/black"
-        android:dividerHeight="0px" />
+
+  <ListView
+    android:id="@+id/list_view_group_chat"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:layout_above="@id/edit_text_group_message_content"
+    android:layout_below="@id/group_chat_title"
+    android:divider="@color/black"
+    android:dividerHeight="0px" />
 
 </RelativeLayout>
