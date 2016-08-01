@@ -37,7 +37,7 @@ public class GroupService extends Service {
 
   @Override 
   public void onCreate() {
-    Log.d(TAG, "Start!!");
+    Log.d(TAG, "create group service");
     try{
       app = ServalBatPhoneApplication.context;
       this.identity = app.server.getIdentity();
@@ -60,7 +60,7 @@ public class GroupService extends Service {
       Log.d(TAG,"NEW MESSAGE!!");
       Bundle bundle = intent.getExtras();
       String senderSidText = (String) bundle.get("sender");
-      Log.d(TAG,senderSidText);
+      Log.d(TAG,"from: " +  senderSidText);
       SubscriberId senderSid = new SubscriberId(senderSidText);
       updateGroupMessageList(identity.sid, senderSid);
     }
@@ -75,7 +75,7 @@ public class GroupService extends Service {
 
   @Override 
   public void onDestroy() {
-    Log.d(TAG,"Destroy!!");
+    Log.d(TAG,"Destroy group service");
   }
 
   public void unicast(SubscriberId sender, SubscriberId receiver, String messageText) {
@@ -189,7 +189,6 @@ public class GroupService extends Service {
         Log.d(TAG, "UPDATE!!" + " TABLE NAME= " + groupName);
         for (String member : extractResults.subList(3, extractResults.size())) {
           members.add(new GroupMember(groupName, groupLeaderSid, "MEMBER", member, ""));
-          Log.d(TAG, "member " + member);
         }
         groupDAO.updateGroup(new Group(groupName, members, groupLeaderSid, false));
         groupDAO.insertMessage(new GroupMessage("UPDATE", sender, receiver,

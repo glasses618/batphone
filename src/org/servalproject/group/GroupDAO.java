@@ -72,7 +72,7 @@ public class GroupDAO {
     contentValues.put(MESSAGES_COLUMN_CONTENT, gm.getContent());
     contentValues.put(MESSAGES_COLUMN_LEADER, gm.getGroupLeader());
     db.insert(MESSAGES_TABLE_NAME, null, contentValues);
-    Log.d("GroupDbHelper", "insert");
+    Log.d("GroupDAO", "insert message");
     return true;
   }
 
@@ -84,7 +84,7 @@ public class GroupDAO {
     ContentValues contentValues = new ContentValues();
     contentValues.put(MESSAGES_COLUMN_DONE, 1);
     db.update(MESSAGES_TABLE_NAME, contentValues, MESSAGES_COLUMN_ID+ " = ?", new String[] {Integer.toString(id)});
-    Log.d("GroupDbHelper", "done");
+    Log.d("GroupDAO", "done message");
     return true;
 
   }
@@ -154,7 +154,7 @@ public class GroupDAO {
       Long timestamp = c.getLong(c.getColumnIndexOrThrow(MESSAGES_COLUMN_TIMESTAMP));
       boolean done = c.getInt(c.getColumnIndexOrThrow(MESSAGES_COLUMN_DONE))>0;
       String content = c.getString(c.getColumnIndexOrThrow(MESSAGES_COLUMN_CONTENT));
-      Log.d("GroupDAO","content:" + content);
+      Log.d("GroupDAO","chat content: " + content);
       if(from.equals(mySid)){
         GroupChat chat = new GroupChat(groupName, mySid, content, timestamp, done, true);
         chatList.add(chat);
@@ -175,7 +175,7 @@ public class GroupDAO {
     contentValues.put(MEMBERS_COLUMN_MEMBER_NAME, gm.getMemberName()); 
     contentValues.put(MEMBERS_COLUMN_LEADER, gm.getLeader()); 
     db.insert(MEMBERS_TABLE_NAME, null, contentValues);
-    Log.d("GroupDbHelper", "insert member");
+    Log.d("GroupDAO", "insert member");
     return true;
   }
 
