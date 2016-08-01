@@ -75,9 +75,6 @@ public class GroupActivity extends Activity {
       setupButtonListener();
       setupGroupPeerList();      
 
-      //      Group group = groups.get(0);
-      //      multicast(group, "Hello!");
-
     } catch (Exception e) {
       Log.e(TAG, e.getMessage(), e);
       app.displayToastMessage(e.getMessage());
@@ -87,14 +84,9 @@ public class GroupActivity extends Activity {
 
   @Override
   protected void onResume() {
-    //    IntentFilter filter = new IntentFilter();
-    //		filter.addAction(MeshMS.NEW_MESSAGES);
-    //		this.registerReceiver(receiver, filter);
-    //    this.registerReceiver(receiver, new IntentFilter("addNewMember"));
     checkNewJoinRequest();
     checkNewLeaveRequest();
     super.onResume();
-    //		displayed = true;
 
     new AsyncTask<Void, Void, Void>() {
 
@@ -111,43 +103,10 @@ public class GroupActivity extends Activity {
   protected void onPause() {
     super.onPause();
     PeerListService.removeListener(listener);
-    //		this.unregisterReceiver(receiver);
-    //		displayed = false;
-
-    //    this.unregisterReceiver(receiver);
     peers.clear();
     peersList.clear();
     super.onPause();
-    //		listAdapter.notifyDataSetChanged();
   }
-
-  //  BroadcastReceiver receiver = new BroadcastReceiver(){
-  //    
-  //    @Override
-  //    public void onReceive(Context context, Intent intent) {
-  //      Bundle bundle = intent.getExtras();
-  //      String member = (String) bundle.get("sid");
-  //      addMember(member);
-  //
-  //    
-  //    }
-  //  };
-  //  BroadcastReceiver receiver = new BroadcastReceiver() {
-  //
-  //		@Override
-  //		public void onReceive(Context context, Intent intent) {
-  //			if (intent.getAction().equals(MeshMS.NEW_MESSAGES)) {
-  //        app.displayToastMessage("received broadcast!!");
-  //        Bundle bundle = intent.getExtras();
-  //        String senderSid = (String) bundle.get("sender");
-  //        Log.d(TAG,"NEW MESSAGE!!!");
-  //        Log.d(TAG,senderSid);
-  //				//updateGroupList();
-  //			}
-  //		}
-  //
-  //	};
-
 
   private void setupGroupList() {
     groups = groupDAO.getMyGroupList();
@@ -242,7 +201,6 @@ public class GroupActivity extends Activity {
       GroupActivity.this.peersList.add(peers.get(i).toString());
     }
       GroupActivity.this.groupPeerListAdapter.notifyDataSetChanged();
-    //		listAdapter.notifyDataSetChanged();
   }
 
   private IPeerListListener listener = new IPeerListListener(){
@@ -299,8 +257,6 @@ public class GroupActivity extends Activity {
       @Override
       protected void onPostExecute(Boolean ret) {
         if (ret) {
-          // message.setText("");
-          //  populateList();
         }
       }
 
@@ -334,11 +290,6 @@ public class GroupActivity extends Activity {
       app.displayToastMessage(e.getMessage());
     }
   }
-  //  public void broadcast(View view) {
-  //    for (int i = 0; i <  peers.size(); i++) {
-  //      unicast(identity.sid, peers.get(i).sid, "broadcast");
-  //    }
-  //  }
 
   private void checkNewJoinRequest(){
     HashMap<String,String> newJoinList = groupDAO.getNewJoinList();
@@ -368,8 +319,6 @@ public class GroupActivity extends Activity {
 
       if(groupDAO.isMyGroup(groupName)){
         groupDAO.insertMember(new GroupMember(groupName, identity.sid.toString(), "MEMBER", member, ""));
-        //ArrayList<Group> groupList = groupDAO.getMyGroupList();
-        //multicast(group, "new Member " + member + " joined!");
         Log.d(TAG, member + " joined!");
       }
     }
@@ -386,8 +335,6 @@ public class GroupActivity extends Activity {
 
       if(groupDAO.isMyGroup(groupName)){
         groupDAO.deleteMember(new GroupMember(groupName, identity.sid.toString(), "MEMBER", member, ""));
-        //ArrayList<Group> groupList = groupDAO.getMyGroupList();
-        //multicast(group, "new Member " + member + " joined!");
         SubscriberId memberSid = new SubscriberId(member);
         unicast(identity.sid , memberSid, "Group Message:DONE_LEAVE," + groupName + "," + identity.sid.toString());
         Log.d(TAG, member + " leave!");

@@ -183,8 +183,6 @@ public class GroupChatActivity extends Activity{
       @Override
       protected void onPostExecute(Boolean ret) {
         if (ret) {
-          // message.setText("");
-          //  populateList();
         }
       }
 

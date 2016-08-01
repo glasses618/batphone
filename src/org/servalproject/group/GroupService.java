@@ -34,21 +34,6 @@ public class GroupService extends Service {
   public static final String UPDATE_GROUP_ACTION = "org.servalproject.group.UPDATE_GROUP";
   private ServalBatPhoneApplication app;
   private KeyringIdentity identity;
-  //  BroadcastReceiver receiver = new BroadcastReceiver() {
-  //
-  //		@Override
-  //		public void onReceive(Context context, Intent intent) {
-  //			if (intent.getAction().equals(MeshMS.NEW_MESSAGES)) {
-  //       app.displayToastMessage("received broadcast!!");
-  //       Bundle bundle = intent.getExtras();
-  //       String senderSid = (String) bundle.get("sender");
-  //       Log.d(TAG,"NEW MESSAGE!!!");
-  //       Log.d(TAG,senderSid);
-  //				//updateGroupList();
-  //			}
-  //		}
-  //
-  //	};
 
 
   @Override 
@@ -57,9 +42,6 @@ public class GroupService extends Service {
     try{
       app = ServalBatPhoneApplication.context;
       this.identity = app.server.getIdentity();
-      //    IntentFilter filter = new IntentFilter();
-      //    filter.addAction(MeshMS.NEW_MESSAGES);
-      //    this.registerReceiver(receiver, filter);
     } catch (Exception e ) {
       Log.e(TAG, e.getMessage(), e);
       app.displayToastMessage(e.getMessage());
@@ -82,7 +64,6 @@ public class GroupService extends Service {
       Log.d(TAG,senderSidText);
       SubscriberId senderSid = new SubscriberId(senderSidText);
       updateGroupMessageList(identity.sid, senderSid);
-      // unicast(identity.sid,senderSid,"ACK");
     }
     catch(Exception e) {
       Log.e(TAG, e.getMessage(), e);
@@ -96,7 +77,6 @@ public class GroupService extends Service {
   @Override 
   public void onDestroy() {
     Log.d(TAG,"Destroy!!");
-    //		this.unregisterReceiver(receiver);
   }
 
   public void unicast(SubscriberId sender, SubscriberId receiver, String messageText) {
@@ -107,8 +87,6 @@ public class GroupService extends Service {
       @Override
       protected void onPostExecute(Boolean ret) {
         if (ret) {
-          // message.setText("");
-          //  populateList();
         }
       }
 

@@ -9,7 +9,6 @@ public class Group {
   private String leader;
   private boolean isMyGroup;
   private ArrayList<GroupMember> members = new ArrayList<GroupMember>();
-//  public GroupType type;
 
   Group(String name) {
     this.name = name;
@@ -42,32 +41,6 @@ public class Group {
     return leader.substring(0,5) + "*";
   }
 
-//  public enum GroupType {
-//    OWN, MEMBER_OF, OTHER
-//  }
-//  
-//  public void setType(GroupType type) {
-//    this.type = type;
-//  }
-//
-//  public void addMember(GroupMember member) {
-//      this.members.add(member);
-//  }
-//
-//  public void removeMember(GroupMember member) {
-//    this.members.remove(member);
-//  }
-//  
-//  public void clearAllMember() {
-//    this.members.clear();
-//  }
-//  public ArrayList<String> getMemberSidList() {
-//    ArrayList<String> memberSidList = new ArrayList<String>();
-//    for (int i = 0; i < members.size(); i++) {
-//      memberSidList.add(members.get(i).getSid());
-//    }
-//    return memberSidList;
-//  }
   @Override 
   public boolean equals(Object o) {
     if(o instanceof Group){
