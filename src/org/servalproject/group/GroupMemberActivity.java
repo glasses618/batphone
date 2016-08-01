@@ -8,7 +8,6 @@ import android.view.View;
 import android.widget.ListView;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 
 import org.servalproject.R;
 import org.servalproject.servaldna.SubscriberId;

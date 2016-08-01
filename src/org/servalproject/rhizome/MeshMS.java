@@ -32,19 +32,9 @@ public class MeshMS {
 	}
 
 	public void bundleArrived(RhizomeManifest_MeshMS meshms) throws RhizomeManifest.MissingField {
-    Log.d("MeshMS_","new message!!");
-
-    Log.d("MeshMS_","mysid:" + sid.toString()+" receiver:" + meshms.getRecipient().toString() + " sender:" + meshms.getSender().toString() );
 		if (sid.equals(meshms.getRecipient())){
-      Log.d("MeshMS_","sender: " + meshms.getSender().toString());
 			initialiseNotification();
-//      Intent intent = new Intent(NEW_MESSAGES);
-//      intent.putExtra("sender", meshms.getSender().toString());
-//			app.sendBroadcast(intent);
-//      
-//      Intent intentGroupService = new Intent(ServalBatPhoneApplication.context, GroupService.class);
-//      intentGroupService.putExtra("sender", meshms.getSender().toString());
-//      app.startService(intentGroupService);
+      app.sendBroadcast(new Intent(NEW_MESSAGES));
 		}
 	}
 

@@ -10,10 +10,7 @@ import android.widget.ListView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ArrayAdapter;
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.database.Cursor;
 
 import org.servalproject.R;
