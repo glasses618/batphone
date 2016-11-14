@@ -21,3 +21,5 @@
 .DS_Store
 proguard-project.txt
 **/tags
+/log/
+/data/bin/servald
