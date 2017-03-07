@@ -653,16 +653,24 @@ ${manifest.id.line}${manifest.bk.line}${manifest.version.line}</echo>
 
     <target name="servaldna-java">
       <javac 
-	srcdir="jni/serval-dna/java"
-	excludes="org/servalproject/test/**"
-	destdir="bin/classes"
-	target="1.5"
-	source="1.5"
-	debug="true"
-      />
+        srcdir="jni/serval-dna/java"
+        excludes="org/servalproject/test/**"
+        destdir="bin/classes"
+        target="1.5"
+        source="1.5"
+        debug="true"
+        />
     </target>
-
-    <target name="-pre-compile" depends="servaldna-java"/>
+    <target name="secretshare">
+      <javac 
+        srcdir="secretshare-src/src/main/java" 
+        destdir="./bin/classes"
+        target="1.7"
+        source="1.7"
+        debug="true"
+        />
+    </target>
+    <target name="-pre-compile" depends="servaldna-java, secretshare"/>
 
 <!--
     /* This is typically used for code obfuscation.
@@ -692,5 +700,4 @@ ${manifest.id.line}${manifest.bk.line}${manifest.version.line}</echo>
     -->
     <!-- version-tag: custom -->
     <import file="${sdk.dir}/tools/ant/build.xml" />
-
-</project>
+  </project>

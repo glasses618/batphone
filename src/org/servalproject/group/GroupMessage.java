@@ -6,73 +6,73 @@ import java.util.ArrayList;
 
 public class GroupMessage {
 
-  private String type;
-  private String fromWho;
-  private String toWho;
-  private String objectGroup;
-  private Long timestamp;
-  private Integer done;
-  private String content;
-  private String groupLeader;
+    private String type;
+    private String fromWho;
+    private String toWho;
+    private String objectGroup;
+    private Long timestamp;
+    private Integer done;
+    private String content;
+    private String groupLeader;
 
-  public GroupMessage(String type, String fromWho, String toWho, String objectGroup,
-      Long timestamp, Integer done, String content, String groupLeader) {
-    
-    this.type = type;
-    this.fromWho = fromWho;
-    this.toWho = toWho;
-    this.objectGroup = objectGroup;
-    this.timestamp = timestamp;
-    this.done = done;
-    this.content = content;
-    this.groupLeader = groupLeader;
-  }
-  
-  public String getType() {
-    return type;
-  }
+    public GroupMessage(String type, String fromWho, String toWho, String objectGroup,
+                        Long timestamp, Integer done, String content, String groupLeader) {
 
-  public String getFromWho() {
-    return fromWho;
-  }
+        this.type = type;
+        this.fromWho = fromWho;
+        this.toWho = toWho;
+        this.objectGroup = objectGroup;
+        this.timestamp = timestamp;
+        this.done = done;
+        this.content = content;
+        this.groupLeader = groupLeader;
+    }
 
-  public String getToWho() {
-    return toWho;
-  }
+    public String getType() {
+        return type;
+    }
 
-  public String getObjectGroup() {
-    return objectGroup;
-  }
+    public String getFromWho() {
+        return fromWho;
+    }
 
-  public Long getTimestamp() {
-    return timestamp;
-  }
+    public String getToWho() {
+        return toWho;
+    }
 
-  public Integer getDone() {
-    return done;
-  }
-    
-  public String getContent() {
-    return content;
-  }
-  
-  public String getGroupLeader() {
-    return groupLeader;
-  }
+    public String getObjectGroup() {
+        return objectGroup;
+    }
 
-  public static ArrayList<String> extractGroupMessage(String message) {
-    ArrayList<String> result = new ArrayList<String>();
-    Pattern pattern = Pattern.compile("^Group Message:.*");
-    Matcher matcher = pattern.matcher(message);
-    if(matcher.matches()) {
-      String groupMessage = message.substring(14, message.length());
-      String[] groupMessages = groupMessage.split(","); 
-      for(int i = 0; i < groupMessages.length; i++) {
-        result.add(groupMessages[i]);
-      }
-      return result;
-    } 
-    return null;
-  }
+    public Long getTimestamp() {
+        return timestamp;
+    }
+
+    public Integer getDone() {
+        return done;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public String getGroupLeader() {
+        return groupLeader;
+    }
+
+    public static ArrayList<String> extractGroupMessage(String message) {
+        ArrayList<String> result = new ArrayList<String>();
+        Pattern pattern = Pattern.compile("^Group Message:.*");
+        Matcher matcher = pattern.matcher(message);
+        if(matcher.matches()) {
+            String groupMessage = message.substring(14, message.length());
+            String[] groupMessages = groupMessage.split(",");
+            for(int i = 0; i < groupMessages.length; i++) {
+                result.add(groupMessages[i]);
+            }
+            return result;
+        }
+        return null;
+    }
 
 }

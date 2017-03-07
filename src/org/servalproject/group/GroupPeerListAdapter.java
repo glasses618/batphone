@@ -18,26 +18,26 @@ import java.util.ArrayList;
 
 public class GroupPeerListAdapter extends ArrayAdapter<Peer> {
 
-  private static final String TAG = "GroupPeerListAdapter";
-  public GroupPeerListAdapter(Context context, ArrayList<Peer> peers) {
-    super(context, 0, peers);
-  }
-
-  @Override
-  public View getView(int position, View convertView, ViewGroup parent) {
-    final Peer peer = getItem(position);
-
-    if (convertView == null) {
-      convertView = LayoutInflater.from(getContext()).inflate(R.layout.group_peer_list_item, parent, false);
+    private static final String TAG = "GroupPeerListAdapter";
+    public GroupPeerListAdapter(Context context, ArrayList<Peer> peers) {
+        super(context, 0, peers);
     }
-      TextView tvName = (TextView) convertView.findViewById(R.id.text_view_group_peer_name);
-      tvName.setText(peer.toString());
-      tvName.setOnClickListener(new OnClickListener(){
-        @Override
-        public void onClick(View view){
-        }
-      });
-      return convertView;
 
-  }
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        final Peer peer = getItem(position);
+
+        if (convertView == null) {
+            convertView = LayoutInflater.from(getContext()).inflate(R.layout.group_peer_list_item, parent, false);
+        }
+        TextView tvName = (TextView) convertView.findViewById(R.id.text_view_group_peer_name);
+        tvName.setText(peer.toString());
+        tvName.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+            }
+        });
+        return convertView;
+
+    }
 }
