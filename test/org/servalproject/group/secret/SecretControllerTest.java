@@ -20,7 +20,8 @@ public class SecretControllerTest {
         secretController.generateMasterkey();
         masterkey = secretController.getMasterkey();
         System.out.println(masterkey.getKey());
-        subkeyList = secretController.generateSubkeyList(5, 3);
+        secretController.generatePublicInfo(5, 3);
+        subkeyList = secretController.generateSubkeyList();
         for (SecretKey key: subkeyList) {
             System.out.println(key.getKey());
         }

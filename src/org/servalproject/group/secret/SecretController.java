@@ -14,41 +14,44 @@ public class SecretController {
     private SecretKey mMasterkey;
     private SecretShare.PublicInfo mPublicInfo;
     private ArrayList<SecretKey> mSubkeyList;
-    
-    public SecretController(){
-    
+
+    public SecretController() {
+
     }
-    
-    public ArrayList<SecretKey> generateSubkeyList(Integer n, Integer k) {
+
+    public ArrayList<SecretKey> generateSubkeyList() {
         mSubkeyList = new ArrayList<SecretKey>();
-        if (masterKeyExist()) {
-            mPublicInfo = new SecretShare.PublicInfo(
-                n, k, SecretShare.getPrimeUsedFor4096bigSecretPayload(), "");
+        if (masterKeyExist() && mPublicInfo != null) {
             SecretShare ss = new SecretShare(mPublicInfo);
             SecretShare.SplitSecretOutput out = ss.split(mMasterkey.getKeyBigInteger());
             List<SecretShare.ShareInfo> shareInfo = out.getShareInfos();
-            for (SecretShare.ShareInfo share: shareInfo) {
+            for (SecretShare.ShareInfo share : shareInfo) {
                 mSubkeyList.add(new SecretKey(share.getShare()));
             }
         }
         return mSubkeyList;
     }
 
+    public void generatePublicInfo(Integer n, Integer k) {
+        mPublicInfo = new SecretShare.PublicInfo(
+            n, k, SecretShare.getPrimeUsedFor4096bigSecretPayload(), "");
+    }
+
     public SecretKey reconstructMasterkey(
-            ArrayList<SecretKey> subkeyList) {
+        ArrayList<SecretKey> subkeyList) {
 
         SecretKey masterkey = new SecretKey("");
         SecretShare solver = new SecretShare(mPublicInfo);
         ArrayList<SecretShare.ShareInfo> shareInfoList =
             new ArrayList<SecretShare.ShareInfo>();
         for (int i = 0; i < subkeyList.size(); i++) {
-            shareInfoList.add(new SecretShare.ShareInfo(i+1, subkeyList.get(i).getKeyBigInteger(), mPublicInfo));
+            shareInfoList.add(new SecretShare.ShareInfo(i + 1, subkeyList.get(i).getKeyBigInteger(), mPublicInfo));
         }
         try {
             SecretShare.CombineOutput solved = solver.combine(shareInfoList);
             masterkey = new SecretKey(solved.getSecret());
         } catch (SecretShareException e) {
-            System.out.println("Not enough keys"); 
+            System.out.println("Not enough keys");
         }
         mMasterkey = masterkey;
         return masterkey;
@@ -57,7 +60,7 @@ public class SecretController {
     public ArrayList<SecretKey> updateSubkeyList() {
 
         ArrayList<SecretKey> keyList =
-            generateSubkeyList(mPublicInfo.getN(), mPublicInfo.getK());
+            generateSubkeyList();
         return keyList;
     }
 
@@ -81,8 +84,8 @@ public class SecretController {
     public String encryptData(String input, SecretKey key) {
 
         StringBuffer output = new StringBuffer();
-        String keyString = key.getKey(); 
-        for (int i = 0; i< input.length(); i++) {
+        String keyString = key.getKey();
+        for (int i = 0; i < input.length(); i++) {
             output.append((char) (input.charAt(i) ^ keyString.charAt(i % keyString.length())));
         }
 
