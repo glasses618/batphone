@@ -14,7 +14,7 @@ public class SecretController {
     private SecretKey mMasterkey;
     private SecretShare.PublicInfo mPublicInfo;
     private ArrayList<SecretKey> mSubkeyList;
-
+    private static final int KEY_LENGTH = 128;
     public SecretController() {
 
     }
@@ -35,6 +35,10 @@ public class SecretController {
     public void generatePublicInfo(Integer n, Integer k) {
         mPublicInfo = new SecretShare.PublicInfo(
             n, k, SecretShare.getPrimeUsedFor4096bigSecretPayload(), "");
+    }
+    
+    public String getPublicInfo() {
+        return mPublicInfo.toString();
     }
 
     public SecretKey reconstructMasterkey(
@@ -73,7 +77,7 @@ public class SecretController {
     }
     public void generateMasterkey() {
         SecureRandom random = new SecureRandom();
-        mMasterkey = new SecretKey(new BigInteger(130, random).toString(32));
+        mMasterkey = new SecretKey(new BigInteger(KEY_LENGTH, random).toString(32));
 
     }
 
