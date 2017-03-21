@@ -681,7 +681,6 @@ Test secret functions
     <path id="classpath.test">
       <pathelement location="lib/junit-4.12.jar"/>
       <pathelement location="lib/hamcrest-core-1.3.jar"/>
-      <pathelement location="lib/secretshare.jar"/>
       <pathelement location="${main.build.dir}"/>
     </path>
     <target name="secret-compile">

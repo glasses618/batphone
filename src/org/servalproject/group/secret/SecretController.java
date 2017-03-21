@@ -14,7 +14,7 @@ public class SecretController {
     private SecretKey mMasterkey;
     private SecretShare.PublicInfo mPublicInfo;
     private ArrayList<SecretKey> mSubkeyList;
-    private static final int KEY_LENGTH = 128;
+    private static final int KEY_LENGTH = 4096;
     public SecretController() {
 
     }
@@ -23,7 +23,8 @@ public class SecretController {
         mSubkeyList = new ArrayList<SecretKey>();
         if (masterKeyExist() && mPublicInfo != null) {
             SecretShare ss = new SecretShare(mPublicInfo);
-            SecretShare.SplitSecretOutput out = ss.split(mMasterkey.getKeyBigInteger());
+            SecureRandom random = new SecureRandom();
+            SecretShare.SplitSecretOutput out = ss.split(mMasterkey.getKeyBigInteger(), random);
             List<SecretShare.ShareInfo> shareInfo = out.getShareInfos();
             for (SecretShare.ShareInfo share : shareInfo) {
                 mSubkeyList.add(new SecretKey(share.getShare()));
